@@ -1,0 +1,202 @@
+{include file="header.html"}
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <form class="form-horizontal" id="form01">
+        <div class="top-title">
+            <h2 class="sub-header">修改币信息</h2>
+        </div>
+        <div style="clear:both"></div>
+        <br>
+        <div class="form-group">
+            <label  class="col-sm-2 control-label">圈子分类：</span><i>*</i></label>
+            <label class="radio-inline">
+                <!--<input type="radio" name="task_list" id="task_list" value="1"> task_list-->
+                <select name="is_official" id="is_official" >
+                    <option value ="0" {if $coin_data.is_official==0} selected = "selected" {/if} >货币圈子</option>
+                    <option value ="1" {if $coin_data.is_official==1} selected = "selected" {/if} >官方圈子</option>
+                </select>
+            </label>
+        </div>
+        <div class="form-group" id="official_name" style="display: none">
+            <label  class="col-sm-2 control-label">官方圈名：</span><i>*</i></label>
+            <div class="col-sm-6">
+                <input type="text" name="official_name" value="{$coin_data.coin_symbol}" class="form-control" placeholder="">
+            </div>
+        </div>
+        <div class="form-group" id="all_name">
+            <label class="col-sm-2 control-label"><span class="name_span">币名称</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="text" name="coin_name" value="{$coin_data.coin_name}" id="score" class="form-control" >
+            </div>
+        </div>
+        <div class="form-group" id="u_name">
+            <label class="col-sm-2 control-label"><span class="name_span">币简介</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="text" name="coin_symbol" value="{$coin_data.coin_symbol}" id="coin_symbol" class="form-control" >
+            </div>
+        </div>
+        <div class="form-group" id="is_newcoin">
+            <label  class="col-sm-2 control-label">币来源：</span><i>*</i></label>
+            <label class="radio-inline">
+                <select name="is_newcoin" id="is_newcoin" >
+                    <option value ="0" {if $coin_data.is_newcoin==0} selected = "selected" {/if}>币牛牛</option>
+                    <option value ="1" {if $coin_data.is_newcoin==1} selected = "selected" {/if}>其他</option>
+                </select>
+                <font color=red>需要抓取币牛牛数据时选择币牛牛来源</font>
+            </label>
+        </div>
+        <div class="form-group" id="is_grade">
+            <label  class="col-sm-2 control-label">是否评级圈：</span><i>*</i></label>
+            <label class="radio-inline">
+                <select name="is_grade" id="is_grade" >
+                    <option value ="0" {if $coin_data.is_grade==0} selected = "selected" {/if}>否</option>
+                    <option value ="1" {if $coin_data.is_grade==1} selected = "selected" {/if}>是</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">slogan：</span><i>*</i></label>
+            <div class="col-sm-6">
+                <textarea rows="5" cols="60" name="slogan"  id="slogan" >{$coin_data.slogan}</textarea>
+                <div class="textareaTip">您还可以再输入<strong id="textareaCount">30</strong>个字</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label  class="col-sm-2 control-label">币图标：</span><i>*</i></label>
+            <div class="col-sm-6">
+                <input type="hidden" name="medias_id" value="{$coin_data.img_from_url}">
+                <div id="file-upload-pre" ><img id="image" src="{$coin_data.img_from_url}" value="{$coin_data.img_from_url}" width="200px" height="150px"></div>
+                <!--<input type="text" class="form-control" name="credit_logo_url" size="60" id="form-credit-logo-url" readonly> (jpg/png)&nbsp;&nbsp;-->
+                <span id="form-logo-container"></span>&nbsp;&nbsp;
+                <input type="button" class="btn btn-success" id="form-input-upload-logo-select" value="选择图片" />&nbsp;&nbsp;&nbsp;
+                <input type="button" class="btn btn-warning" id="form-input-upload-logo-button" value="确认上传" />
+            </div>
+        </div>
+        <div class="form-group" align="center">
+            <div class="col-sm-7">
+                <input type="hidden" name="id" value="{$coin_data.id}" class="form-control">
+                <button type="button" id="button" class="btn btn-primary" >提交</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+<script>
+    $("#startTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd',autoclose:true, minView: "month" });
+    $("#endTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd ', autoclose:true , minView: "month"});
+    var file_url =  window.location.pathname;
+    var uploaderLogo = new plupload.Uploader({
+        runtimes : 'html5,flash,silverlight,html4',
+        browse_button : 'form-input-upload-logo-select', // you can pass an id...
+        url : file_url+'?c=upload&a=upload_url&n=' + Math.random(),
+        flash_swf_url : 'admin/js/Moxie.cdn.swf',
+        silverlight_xap_url : 'admin/js/Moxie.cdn.xap',
+
+        filters : {
+            max_file_size : '10mb',
+            mime_types : [ //只允许上传图片和zip文件
+                { title : "Image files", extensions : "jpg,png" }
+            ]
+        },
+        init: {
+            PostInit: function() {
+                // medias_id = $(":input[name=medias_id]").val('');//上传图片时要不原有的路径清空
+                document.getElementById('form-input-upload-logo-button').onclick = function() {
+                    uploaderLogo.start();
+                    return false;
+                };
+            },
+            FileUploaded: function (uploader,file,responseObject){
+
+                try{
+                    var data = JSON.parse(responseObject.response);
+                    $("#file-upload-pre").html('<img width="200px" height="150px" src="'+ data.url+ '" />')
+                    //console.log(data);
+                    $(":input[name=medias_id]").val(data.url);
+                    //$(":input[name=credit_logo_url]").val(data['data']['err_msg']['filename']['url']);
+                    //$("#form-logo-container").find('a').attr('href',data['data']['err_msg']['filename']['url']);
+                }catch (e){
+                    $("#form-logo-container").html('');
+                    throwExc('上传失败请稍后重试...');
+                    return ;
+                }
+            },
+            FilesAdded: function(up, files) {
+                var file =files.pop();
+                $("#file-upload-pre").html( file.name);
+            }
+        }
+    });
+    uploaderLogo.init();
+    //字数限制
+    $('#slogans').keyup(function() {
+        var maxLength = 30;
+        var len = $('#slogan').val().length;
+        $('#textareaCount').html(maxLength - len);
+        if(parseInt($('#textareaCount').text()) < 0) {
+            $('#textareaCount').html('0');
+            var res = $(this).val().substring(0, 30);
+            $(this).val(res);
+        }
+    });
+    //默认官方圈子显示模板
+    var is_official=$('#is_official option:selected').val();
+    if(is_official==1){
+        $("#u_name").hide();
+        $("#all_name").hide();
+        $("#official_name").show();
+    }
+    //圈子隐藏列表
+    $("#is_official").click(function () {
+        var jump_list = $(this).val();
+        if(jump_list == 1)
+        {
+            $("#u_name").hide();
+            $("#all_name").hide();
+
+        }else{
+            $("#u_name").show();
+            $("#all_name").show();
+        }
+
+        if(jump_list == 0)
+        {
+            $("#official_name").hide();
+
+        }else{
+            $("#official_name").show();
+        }
+    });
+    $(function () {
+        //提交表单
+        $("#button").click(function () {
+            var slogan = $("#slogan").val();
+            var id = $("#id").val();
+            var official_name = $('input[name=official_name]').val();
+            var medias_id=$('input[name=medias_id]').val();//图片
+            var form= $('#form01').serialize();
+            if($.trim(official_name)==''){
+                throwExc('圈子名称必填');
+                return false;
+            }
+            $.ajax({
+                "url": "?c=category&a=upCurrency",
+                'type': 'POST',
+                'data': form,
+                'dataType': 'json',
+                'success': function (data) {
+                    if(data.code == 1){
+                        layer.alert(data.message);
+                    }else{
+                        layer.alert(data.message);
+                        window.location.href = '?c=category&a=currency_list';
+                    }
+                }
+            });
+        });
+
+    });
+</script>
+{include file="footer.html"}

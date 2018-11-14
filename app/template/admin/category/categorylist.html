@@ -1,0 +1,176 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">分类列表&nbsp;&nbsp;<small>categoryList</small></h2>
+
+    <a href="?c=category&a=addCategory" class="btn btn-success">添加</a>
+
+
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th colspan="1" rowspan="1">分类ID</th>
+                    <th class="col-sm-1">分类名称</th>
+                    <th class="col-sm-1">启用状态</th>
+                    <th class="col-sm-1">首页状态</th>
+                    <th class="col-sm-1">类型</th>
+                    <th class="col-sm-1">排序</th>
+                    <th class="col-sm-3">创建时间</th>
+                    <th >操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {if $categoryData}
+                {foreach $categoryData as $key=>$item}
+                <tr id="{$item.c_id}" sort="{$item.sort}">
+                    <td>{$item.c_id}</td>
+                    <td>{$item.category_name}</td>
+                    <td>{if $item.status eq 1}启用{else}未启用{/if}</td>
+                    <td>{if $item.is_homepage eq 1}启用{else}未启用{/if}</td>
+                    <td>{if $item.type eq 0}普通{else}官方{/if}</td>
+                    <td>
+                        <a href="javascript:void(0)" onclick="moveUp(this)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                        &nbsp;&nbsp;
+                        <a href="javascript:void(0)" onclick="moveDown(this)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                    </td>
+                    <td class="time-info">
+                        <span>{$item.create_time}</span>
+                        <br/><br/>
+                        {if $item.update_time}
+                            <span ><strong>修改时间</strong><br/>{$item.update_time}</span>
+                        {/if}
+
+                    </td>
+                    <td>
+                        <a href="?c=category&a=upCategory&c_id={$item.c_id}"  class="btn btn-primary btn-xs szpq">编辑</a>
+                        {if $item.status eq 1 }
+                        <a href="javascript:void(0);"  class="btn btn-danger btn-xs start" pid="{$item.c_id}">禁用</a>
+                        {else}
+                        <a href="javascript:void(0);"  class="btn btn-success btn-xs start" pid="{$item.c_id}">启用</a>
+                        {/if}
+                        {if $item.is_homepage eq 1 }
+                        <a href="javascript:void(0);"  class="btn btn-danger btn-xs  is_homepage"  pid="{$item.c_id}">禁用首页显示</a>
+                        {else}
+                        <a href="javascript:void(0);"  class="btn btn-success btn-xs  is_homepage"  pid="{$item.c_id}">启用首页显示</a>
+                        {/if}
+                    </td>
+                </tr>
+                {/foreach}
+                {/if}
+                </tbody>
+            </table>
+            <!--<div>{if isset($pageNum)}{$pageNum}{/if}</div>-->
+        </div>
+
+        <!-- end 已上线 -->
+    </div>
+
+</div>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+    $(function(){
+        $(".start").click(function(){
+            var id=$(this).attr('pid');
+            var msg=$(this).html();
+            if(msg=='禁用'){
+                msg='禁用';
+            }else{
+                msg='启动';
+            }
+            if(confirm('你确定要'+msg+"吗？")){
+                window.location.href="?c=category&a=upStatus&id="+id;
+            }
+        });
+
+        $(".is_homepage").click(function () {
+            var id=$(this).attr('pid');
+            var msg=$(this).html();
+            if(msg=='禁用首页显示'){
+                msg='禁用首页显示';
+            }else{
+                msg='启用首页显示';
+            }
+            if(confirm('你确定要'+msg+"吗？")){
+                window.location.href="?c=category&a=upHomePage&id="+id;
+            }
+
+
+        })
+    });
+
+    function moveUp(_a){
+        var _row = _a.parentNode.parentNode;
+        //如果不是第一行，则与上一行交换顺序
+        var _node = _row.previousSibling;
+        while(_node && _node.nodeType != 1){
+            _node = _node.previousSibling;
+        }
+        if(_node){
+            swapNode(_row,_node);
+        }else{
+            throwExc('已经是第一位');
+        }
+    }
+    function moveDown(_a){
+        var _row = _a.parentNode.parentNode;
+        //如果不是最后一行，则与下一行交换顺序
+        var _node = _row.nextSibling;
+        while(_node && _node.nodeType != 1){
+            _node = _node.nextSibling;
+        }
+        if(_node){
+            swapNode(_row,_node);
+        }else{
+            throwExc('已经是最后一位');
+        }
+    }
+    function swapNode(node1,node2){
+        //获取父结点
+        var _parent = node1.parentNode;
+        //获取两个结点的相对位置
+        var _t1 = node1.nextSibling;
+        var _t2 = node2.nextSibling;
+        if(!updateSort(node1,node2,)){
+            return false;
+        }
+        //将node2插入到原来node1的位置
+        if(_t1)_parent.insertBefore(node2,_t1);
+        else _parent.appendChild(node2);
+        //将node1插入到原来node2的位置
+        if(_t2)_parent.insertBefore(node1,_t2);
+        else _parent.appendChild(node1);
+    }
+
+    function updateSort(_t1,_t2)
+    {
+        var return_res = false;
+        var params = {};
+        var sort1 = $(_t2).attr('sort');
+        var sort2 = $(_t1).attr('sort');
+        params['id'] = $(_t1).attr('id')+","+$(_t2).attr('id');
+        params['sort'] = sort1+","+sort2;
+        $.ajax({
+            type : "post",
+            url : "?c=category&a=update_sort_category",
+            data:  params,
+            async : false,
+            dataType:'json',
+            success : function(response){
+                if(response.code == 1){
+                    throwExc(response.message);
+                }else{
+                    $(_t1).attr('sort',sort1);
+                    $(_t2).attr('sort',sort2);
+                    return_res = true;
+                    showSucc(response.message);
+                }
+            }
+        });
+        return return_res;
+    }
+</script>

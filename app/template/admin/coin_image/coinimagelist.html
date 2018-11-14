@@ -1,0 +1,105 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">币种banner列表&nbsp;&nbsp;<small>coinBannerList</small></h2>
+
+    <a href="?c=coin_image&a=add_coin_banner" class="btn btn-success">添加</a>
+
+
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <!-- <th><input type="checkbox"></th> -->
+                    <th colspan="1" rowspan="1">id</th>
+                    <th >币种名称</th>
+                    <th >banner</th>
+                    <th >跳转地址</th>
+                    <th>启用状态</th>
+                    <th>是否需要登录</th>
+                    <th>操作</th>
+                </tr>
+                </tr>
+                </thead>
+                <tbody>
+                {if $coin_banner_img_msg}
+                {foreach $coin_banner_img_msg as $key=>$item}
+                <tr>
+                    <!--<td><input class="ids" type="checkbox" value="{$item.id}-{$item.id}" name="id[]"></td>  -->
+                    <td>{$item.id}</td>
+                    <td>{$item.coin_symbol}({$item.coin_name})</td>
+                    <td><img src="{$item.banner_img_url}" alt="" width="120" height="60"></td>
+                    <td style="word-wrap:break-word;word-break:break-all;">{$item.redirect_url}</td>
+                    <td>{if $item.status ==1} 已启用{else} 已禁用{/if}</td>
+                    <td align="left">{if $item.is_login ==1}是{else} 否{/if}</td>
+                   <td>
+                        <a href="?c=coin_image&a=update_coin_banner&id={$item.id}" class="btn btn-primary btn-xs szpq">编辑</a>
+                        {if $item.status ==1 }
+                        <a href="javascript:void(0);"  class="btn btn-danger btn-xs start" pid="{$item.id}">禁用</a>
+                        {else}
+                        <a href="javascript:void(0);"  class="btn btn-success btn-xs start" pid="{$item.id}">启用</a>
+                        {/if}
+                        <a href="javascript:void(0);"  class="btn btn-danger btn-xs status" pid="{$item.id}">删除</a>
+                    </td>
+                    <!---<td>{if $item.integral_total neq ""}{$item.integral_total}{else}0.00{/if}</td>--->
+                </tr>
+                {/foreach}
+                {/if}
+                </tbody>
+            </table>
+            <div >{if isset($total_num)} <span style="font-size: 25px;">总计{$total_num}条{/if}</span></div>
+            <div>{if isset($page_num)}{$page_num}{/if}</div>
+            <!--<div>{if isset($pageNum)}{$pageNum}{/if}</div>-->
+        </div>
+
+        <!-- end 已上线 -->
+    </div>
+
+</div>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+    $(function(){
+        $(".status").click(function(){
+            var id=$(this).attr('pid');
+            if(!id){ throwExc('没有参数');return false };
+            if(!confirm('确认删除吗')){
+                return false;
+            }
+            $.ajax({
+                type : "post",
+                url : "?c=coin_image&a=delete_coin_banner",
+                data: "id=" + id,
+                async : false,
+                dataType:'json',
+                success : function(response){
+                    console.log(response)
+                    if(response.code == 0){
+                        window.location.href=window.location.href;
+                    }else{
+                        throwExc(response.message);return false;
+                    }
+                }
+            });
+
+        })
+    });
+
+    $(function(){
+        $(".start").click(function(){
+            var id=$(this).attr('pid');
+            var msg=$(this).html();
+            if(msg=='禁用'){
+                msg='禁用';
+            }else{
+                msg='启动';
+            }
+            if(confirm('你确定要'+msg+"吗？")){
+                window.location.href="?c=coin_image&a=update_coin_banner_status&id="+id;
+            }
+        });
+    })
+</script>

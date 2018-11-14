@@ -1,0 +1,160 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">修改版本消息</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="javascript:history.back()">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+
+
+        <div class="tab-pane fade in active" id="no2">
+
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label  for="inputSelect" class="col-sm-2 control-label">系统类型：</label>
+                    <div class="col-sm-7">
+                        <div class="input-group">
+                            <select class="form-control" name="system" id="type">
+                                <option value="1" {if $info.system eq 1} selected {/if} >Ios</option>
+                                <option value="2" {if $info.system eq 2} selected {/if} >Android</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" value="{$info.id}" id="m_id">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">
+                        消息内容:</label>
+                    <div class="col-sm-7">
+                        <textarea name="message" id="message" cols="120" rows="8">{$info.message}</textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">
+                        下载链接：</label>
+                    <div class="col-sm-7">
+                        <input type="" name="url" value="{$info.url}" class="form-control" placeholder="下载链接">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">
+                        需要更新的版本(old) ：</label>
+                    <div class="col-sm-4">
+                        <input type="text" name="version" value="{$info.version}" class="form-control" placeholder="小于的版本号">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">
+                        内部最新版本号 ：</label>
+                    <div class="col-sm-4">
+                        <input type="" name="ver_num" value="{$info.ver_num}" class="form-control" placeholder="内部最新版本号">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">
+                        渠道名称 ：</label>
+                    <div class="col-sm-4">
+                        <input type="" name="channel" value="{$info.channel}" class="form-control" placeholder="渠道名称">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">
+                        是否强制升级 ：</label>
+                    <div class="col-sm-4">
+                        <input type="radio" name="is_update" value="1"  {if $info.is_update eq 1} checked {/if} >是
+                        <input type="radio" name="is_update" value="0" {if $info.is_update eq 0} checked {/if} >否
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">
+                        过审是否弹窗 ：</label>
+                    <div class="col-sm-4">
+                        <input type="radio" name="is_examine" value="1" {if $info.is_examine eq 1} checked {/if} >是
+                        <input type="radio" name="is_examine" value="2" {if $info.is_examine eq 2} checked {/if} >否
+                    </div>
+                </div>
+
+                <!--<div class="form-group">
+                    <label class="col-sm-2 control-label">
+                        展示周期：</label>
+                    <div class="col-sm-4">
+                        <input type="text" name="begin_time" value="{$info.begin_time}" id="begin_time" class="form-control" placeholder="开始时间">
+                        <input type="text" name="end_time" value="{$info.end_time}" id="end_time" class="form-control" placeholder="结束时间">
+                    </div>
+                </div>-->
+                <div class="form-group">
+                    <div class="col-sm-6">
+                        <button type="button" class="btn btn-primary add_company pull-right" >提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var flag=true;
+    function load(){
+        window.location.href = '?c=app_message&a=index';
+    }
+    $(".add_company").click(function(){
+        if(false==flag){
+            return;
+        }
+        //console.log(flag);
+
+        var id  = $("#m_id").val();
+        //console.log(id);
+        var is_update=$('input:radio[name="is_update"]:checked').val();
+        var is_examine=$('input:radio[name="is_examine"]:checked').val();
+        var message= $('#message').val();
+        var system=$('select[name=system]').val();
+        var version=$('input[name=version]').val();
+        var url=$('input[name=url]').val();
+        var begin_time=$('input[name=begin_time]').val();
+        var end_time=$('input[name=end_time]').val();
+        var ver_num=$('input[name=ver_num]').val();
+        var channel=$('input[name=channel]').val();
+        if($.trim(message)==''){
+            throwExc('消息内容必须填写');
+            return false;
+        }
+        if($.trim(url)==''){
+            throwExc('下载链接必须填写');
+            return false;
+        }
+        if($.trim(version) =='' && $.trim(ver_num) =='' ){
+            throwExc('版本必须填写');
+            return false;
+        }
+
+        $.post("?c=app_message&a=edit",{
+            'id':id,
+            'message':message,
+            'system':system,
+            'url':url,
+            'is_update':is_update,
+            'is_examine':is_examine,
+            'version':version,
+            'ver_num':ver_num,
+            'channel':channel,
+
+        },function( response ){
+            if(response.error==100) {
+                throwExc(response.msg);
+                return false;
+            }else if(response.error==200) {
+                showSucc(response.msg);
+                setTimeout("load()",1000);
+            }
+        },"json");
+        flag=false;
+    });
+    //var ue = UE.getEditor('message');
+
+</script>
+
+{include file="footer.html"}

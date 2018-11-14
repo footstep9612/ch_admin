@@ -1,0 +1,74 @@
+{include file="header.html"}
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <form class="form-horizontal" id="form01">
+        <div class="top-title">
+            <h2 class="sub-header">添加每日任务</h2>
+            <div class="top-tools">
+              <a class="btn btn-default" href="?c=everydaytask">返回</a>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+        <br>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">事件名称</span><i>*</i></label>
+            <div class="col-sm-3">
+                <select name="weight" id="select" class="form-control">
+                    {foreach $eventList as $key=>$item}
+                    <option value="{$item.id}" event_code="{$item.event_code}">{$item.name}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">是否展示</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="radio" name="is_show" value="1" checked>展示
+                <input type="radio" name="is_show" value="0" >不展示
+            </div>
+        </div>
+        <div class="form-group" align="center">
+            <div class="col-sm-7">
+                <button type="button" class="btn btn-primary" >提交</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+<script>
+    $(function () {
+        //提交表单
+        $(":button").click(function () {
+            var code=$("#select option:selected").attr('event_code');
+            var event_id=$("#select option:selected").attr('value');
+            var name=$("#select option:selected").text();
+            var status = $('input[name="is_show"]:checked').val();
+            if($.trim(name) == ''||$.trim(code) == ''){
+                throwExc('事件名称必填');
+                return false;
+            }
+
+            $.ajax({
+                "url": "?c=everydaytask&a=addEvent",
+                'type': 'POST',
+                'data': "event_code="+code+"&status="+status+"&event_name="+name+"&event_id="+event_id,
+                'async':false,
+                'dataType': 'json',
+                'success': function (data) {
+                    if(data.code == 1){
+                        layer.alert(data.msg);
+                    }else if(data.code==2){
+                        layer.alert(data.msg);
+                    }else{
+                        layer.alert(data.msg);
+                        window.location.href = '?c=everydaytask&a=index';
+                    }
+                }
+            });
+        });
+
+    });
+
+</script>
+{include file="footer.html"}

@@ -1,0 +1,160 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">添加兑换币种</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=currency_change&a=currencyList">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+
+        <!-- start 线下合同 -->
+        <div class="tab-pane fade in active" id="no2">
+
+            <form class="form-horizontal"   method="post" id="form01">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">兑换币种：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <select name="currency_id" id="currency_id">
+                            {if $currencyname}
+                            {foreach $currencyname as $key=>$item}
+                            <option value="{$item.coin_id}">{$item.symbol}({$item.nameEn})</option>
+                            {/foreach}
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+                <!--<div class="form-group">
+                    <label class="col-sm-2 control-label">兑换总量：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="currency_num" value="" class="form-control" placeholder="兑换总量">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">最低提币数：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="withdraw_lowerlimit" value="" class="form-control" placeholder="最低提币数">
+                    </div>
+                </div>-->
+                <!--<div class="form-group">
+                    <label  class="col-sm-2 control-label">开始时间：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="start_time" value="" class="form-control" placeholder="开始时间" id="startTime">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">结束时间：</span><i>*</i></label>
+                    <div class="col-sm-6" id="datetimepicker">
+                        <input type="text" name="end_time" value="" class="form-control" placeholder="结束时间" id="endTime">
+                    </div>
+                </div>-->
+
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+
+                </div>
+
+
+            </form>
+
+        </div>
+        <!-- end 线下合同 -->
+
+
+    </div>
+    <hr/>
+
+
+</div>
+
+
+
+<script>
+    /*$("#startTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd',autoclose:true, minView: "month" });
+    $("#endTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd ', autoclose:true , minView: "month"});*/
+
+</script>
+<script>
+
+    //提交表单
+    $("#submit").click(function () {
+        var currency_num=$('input[name=currency_num]').val();
+        var withdraw_lowerlimit=$('input[name=withdraw_lowerlimit]').val();
+        var start_time = $('input[name=start_time]').val();
+        var end_time = $('input[name=end_time]').val();
+
+        if($.trim(currency_num)==''){
+            throwExc('兑换总量必须填写');
+            return false;
+        }
+        if(isNumber($.trim(currency_num)) == false || $.trim(currency_num) <=0)
+        {
+            throwExc('兑换数量必须为正整数');
+            return false;
+        }
+        if($.trim(withdraw_lowerlimit)==''){
+            throwExc('最低提币必须填写');
+            return false;
+        }
+        if(isNumber($.trim(withdraw_lowerlimit)) == false || $.trim(withdraw_lowerlimit) <=0)
+        {
+            throwExc('最低提币数必须大于0');
+            return false;
+        }
+        if(parseInt(withdraw_lowerlimit) > parseInt(currency_num))
+        {
+            throwExc('最低提币数不能大于兑换总量');
+            return false;
+        }
+
+        if($.trim(start_time)==''){
+            throwExc('开始时间必须填写');
+            return false;
+        }
+        if($.trim(end_time)==''){
+            throwExc('结束时间必须填写');
+            return false;
+        }
+        var start = new Date(start_time.replace("-", "/").replace("-", "/"));
+        var end = new Date(end_time.replace("-", "/").replace("-", "/"));
+        if(end<start){
+            throwExc('结束时间必须大于开始时间');
+            return false;
+        }
+
+        $.ajax({
+            "url": "?c=currency_change&a=addCurrencyChange",
+            'type': 'POST',
+            'data': $('#form01').serialize(),
+            'dataType': 'json',
+            'success': function (data) {
+                console.log(data)
+                if (data.error != 0) {
+                    layer.alert(data.message);
+                    setTimeout("load()",1000)
+                }
+                else {
+                    layer.alert(data.message);
+                    return false;
+                }
+            }
+
+        });
+
+
+    });
+
+    //判断是否为数字
+    function isNumber(value) {         //验证是否为数字
+        var patrn = /^(-)?\d+(\.\d+)?$/;
+        if (patrn.exec(value) == null || value == "") {
+            return false
+        } else {
+            return true
+        }
+    }
+
+</script>
+{include file="footer.html"}

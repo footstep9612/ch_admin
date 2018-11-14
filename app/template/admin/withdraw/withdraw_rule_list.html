@@ -1,0 +1,89 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">提币规则列表&nbsp;&nbsp;<small>withdrawRuleList</small></h2>
+
+    <a href="?c=withdraw&a=withdraw_coin_add" class="btn btn-success">添加</a>
+
+
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <!-- <th><input type="checkbox"></th> -->
+                    <th colspan="1" rowspan="1">ID</th>
+                    <th class="col-sm-1">币种logo</th>
+                    <th class="col-sm-1">币种简称</th>
+                    <th class="col-sm-1">用户提币数</th>
+                    <th>最低提币数</th>
+                    <th>价格</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>操作</th>
+                </tr>
+                </tr>
+                </thead>
+                <tbody>
+                {if $withdraw_coin}
+                {foreach $withdraw_coin as $key=>$item}
+                <tr>
+                    <!--<td><input class="ids" type="checkbox" value="{$item.id}-{$item.id}" name="id[]"></td>  -->
+                    <td>{$item.id}</td>
+                    <td><img src="{$item.currency_logo}" alt="" width="60" height="60"></td>
+                    <td>{$item.symbol_name}</td>
+                    <td>{$item.sum_currency_num}</td>
+                    <td>{$item.withdraw_lower_limit}</td>
+                    <td>{$item.price}</td>
+                    <td>{$item.start_time}</td>
+                    <td>{$item.end_time}</td>
+                    <td>
+                        <a href="?c=withdraw&a=update_withdraw_rule&id={$item.id}&coin_id={$item.coin_id}" class="btn btn-primary btn-xs szpq">编辑</a>
+                        <a href="javascript:void(0);"  class="btn btn-danger btn-xs status" pid="{$item.id}">删除</a>
+                    </td>
+                    <!---<td>{if $item.integral_total neq ""}{$item.integral_total}{else}0.00{/if}</td>--->
+                </tr>
+                {/foreach}
+                {/if}
+
+                </tbody>
+            </table>
+                <div >{if isset($total_num)} <span style="font-size: 25px;">总计{$total_num}条{/if}</span></div>
+                <div>{if isset($page_num)}{$page_num}{/if}</div>
+        </div>
+
+        <!-- end 已上线 -->
+    </div>
+
+</div>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+    $(function(){
+        $(".status").click(function(){
+            var id=$(this).attr('pid');
+            if(!id){ throwExc('没有参数');return false };
+            if(!confirm('确认删除吗')){
+                return false;
+            }
+            $.ajax({
+                type : "post",
+                url : "?c=withdraw&a=delete_withdraw_rule",
+                data: "id=" + id,
+                async : false,
+                dataType:'json',
+                success : function(response){
+                    console.log(response)
+                    if(response.code == 0){
+                        window.location.href=window.location.href;
+                    }else{
+                        throwExc(response.message);return false;
+                    }
+                }
+            });
+
+        })
+    })
+</script>

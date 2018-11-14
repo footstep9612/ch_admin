@@ -1,0 +1,45 @@
+<html style="font-size: 50px;">
+<head>
+<meta charset="utf-8">
+<title></title>
+<script>
+(function () { 
+    var b = navigator.userAgent;
+    ipad = b.match(/(iPad).*OS\s([\d_]+)/) ? !0 : !1;
+    iphone = !ipad && b.match(/(iPhone\sOS)\s([\d_]+)/) ? !0 : !1;
+    ios = ipad || iphone;
+    var a;
+    if (ios && 2 <= window.devicePixelRatio) {
+        a = .5;
+        b = 2;
+        a = '<meta id="viewMeta" name="viewport" content="initial-scale=' + a + ", maximum-scale=" + a + ", minimum-scale=" + a + ', width=device-width, user-scalable=no" />';
+        var c = document.getElementById("viewMeta"),
+            d = c.parentNode;
+        d && d.removeChild(c);
+        document.write(a);
+        document.documentElement.style.fontSize = 50 * b + "px"
+    }
+})();
+</script>
+<link href="admin/css/preview.css" rel="stylesheet"> 
+<meta id="viewMeta" name="viewport" content="initial-scale=1, width=device-width, maximum-scale=1, user-scalable=no">
+</head>
+<body>
+<div id="app">
+    <div class="detail-warp">
+        <div>
+            <div class="detail-title">
+                {$data.mes_title}
+            </div>
+            <p class="detail-author">
+                {$data.send_time} 
+            </p>
+            <div class="detail-content">
+                 {$data.mes_content}
+            </div>
+        </div>
+    </div>
+</div>
+ 
+</body>
+</html>

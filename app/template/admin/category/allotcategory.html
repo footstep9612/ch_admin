@@ -1,0 +1,118 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">分配分类&nbsp;&nbsp;<small>allotCategory</small></h2>
+
+
+
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <form class="form-horizontal" id="form01">
+                    <tbody>
+                    <tr>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><span class="name_span">请选择货币:</span></label>
+                            <div class="col-sm-3">
+                                <select name="coinList" id="coinList">
+                                    {if $allCoin}
+                                    {foreach $allCoin as $key=>$item}
+                                    <option value="{$item.coin_id}">{$item.coin_symbol}（{$item.coin_name}）</option>
+                                    {/foreach}
+                                    {/if}
+                                </select>
+                            </div>
+                        </div>
+                        <td>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label"><span class="name_span">请选择分类:</span></label>
+                                <div class="col-sm-3">
+                                        {if $allusedCategory}
+                                        {foreach $allusedCategory as $key=>$item}
+                                            {if $key%3 eq 0}
+                                            <br/>
+                                            {/if}
+                                        <input name = "selectedCoin" type="checkbox" value="{$item.c_id}">{$item.category_name}
+                                        {/foreach}
+                                        {/if}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                                <div class="form-group" align="center">
+                                    <div class="col-sm-7">
+                                        <button type="button" class="btn btn-primary" >提交</button>
+                                    </div>
+                                </div>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </form>
+            </table>
+            <!--<div>{if isset($pageNum)}{$pageNum}{/if}</div>-->
+        </div>
+
+        <!-- end 已上线 -->
+    </div>
+
+</div>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+    $(function () {
+        //提交表单
+        $(":button").click(function () {
+
+
+            var checkedCoin = $("#coinList").val();
+            var chk_value = [];
+            var emptyArray;
+            //获取分类ID
+            $('input[name="selectedCoin"]:checked').each(function () {
+                chk_value.push($(this).val());
+            });
+            emptyArray = isUndefined(chk_value);
+            if(emptyArray == true)
+            {
+                throwExc('请选择分类');
+
+            }
+
+            $.ajax({
+                "url": "?c=category&a=allotcategory",
+                'type': 'POST',
+                'data': {
+                    checkedCoin:checkedCoin,
+                    chk_value:JSON.stringify(chk_value)
+                },
+                'dataType': 'json',
+                'success': function (data) {
+                    if(data.code == 1){
+                        layer.alert(data.message);
+                    }else{
+                        layer.alert(data.message);
+                        window.location.href = '?c=category&a=allotcategory';
+                    }
+
+
+                }
+            });
+
+
+
+        });
+
+        //判断数组是否为空
+        function isUndefined(value){
+            return value==undefined || $.trim(value).length==0;
+        }
+
+    });
+</script>
+
+

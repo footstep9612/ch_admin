@@ -1,0 +1,108 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">用户兑换列表&nbsp;&nbsp;<small>userChangeList</small>
+    </h2>
+
+    <form name="form1" class="form-inline" method="post" action="">
+        <div class="form-group">
+            <label for="currency_name" class="input-group">币种简称</label>
+            <div class="input-group">
+                <input id="currency_name" class="form-control datetimepicker" name="currency_name" value="{$searchArr.currency_name}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="input-group">开始时间</label>
+            <div class="input-group">
+                <input id="start_time" class="form-control datetimepicker" name="start_time" value="{$searchArr.start_time}" readonly>
+                <span class="input-group-addon "><div class="glyphicon glyphicon-calendar"></div></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="input-group">结束时间</label>
+            <div class="input-group">
+                <input id="end_time" class="form-control datetimepicker" name="end_time" value="{$searchArr.end_time}" readonly>
+                <span class="input-group-addon "><div class="glyphicon glyphicon-calendar"></div></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="status" class="input-group">提币状态</label>
+            <div class="input-group">
+                <select class="form-control datetimepicker" id="status" name="status">
+                    <option value="" {if $searchArr.status=="" && $searchArr.status!="0"} selected {/if}>请选择</option>
+                    <option value="1"  {if $searchArr.status=="1" && $searchArr.status!=""} selected {/if} >已提币</option>
+                    <option value="0" {if $searchArr.status=="0" && $searchArr.status!=""} selected {/if}>未提币</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" class="form-control" name="submit" value="筛选">
+        </div>
+        <div class="form-group">
+            <a href="?c=currency_change&a=clearSearch&searchKey=userChangeCurrency" class="btn btn-success">清空</a>
+        </div>
+    </form>
+    <br/>
+
+    <button class="btn btn-success import_excel">导出Excel</button>
+
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <!-- <th><input type="checkbox"></th> -->
+                    <th colspan="1" rowspan="1">ID</th>
+                    <th colspan="1" rowspan="1">币种ID</th>
+                    <th class="col-sm-1">用户名</th>
+                    <th class="col-sm-1">币种简称</th>
+                    <th class="col-sm-1">兑换数量</th>
+                    <th class="col-sm-1">花费积分</th>
+                    <th class="col-sm-1">来源途径</th>
+                    <th class="col-sm-1">是否提币</th>
+                    <th>兑换时间</th>
+                </tr>
+                </tr>
+                </thead>
+                <tbody>
+                {if $changeCurrencyMsg}
+                {foreach $changeCurrencyMsg as $key=>$item}
+                <tr>
+                    <!--<td><input class="ids" type="checkbox" value="{$item.id}-{$item.id}" name="id[]"></td>  -->
+                    <td>{$item.id}</td>
+                    <td>{$item.coin_id}</td>
+                    <td>{$item.username}</td>
+                    <td>{$item.currency_name}</td>
+                    <td>{$item.change_num}</td>
+                    <td>{$item.consume_integral}</td>
+                    <td>{if $item.is_activity ==1} 空投活动{else if $item.is_activity ==2} 抽奖活动 {else}兑换中心{/if}</td>
+                    <td>{if $item.is_extract ==1} 已提币{else} 未提币{/if}</td>
+                    <td>{$item.create_time}</td>
+                    <!---<td>{if $item.integral_total neq ""}{$item.integral_total}{else}0.00{/if}</td>--->
+                </tr>
+                {/foreach}
+                {/if}
+                </tbody>
+            </table>
+            <div >{if isset($total_num)} <span style="font-size: 25px;">总计{$total_num}条{/if}</span></div>
+            <div>{if isset($page_num)}{$page_num}{/if}</div>
+            <!--<div>{if isset($pageNum)}{$pageNum}{/if}</div>-->
+        </div>
+
+        <!-- end 已上线 -->
+    </div>
+</div>
+</div>
+</div>
+</body>
+{include file="footer.html"}
+
+<script type="text/javascript">
+    $(function () {
+        $(".import_excel").click(function () {
+            window.location.href="?c=currency_change&a=import_user_changeList_data";
+        })
+    })
+</script>

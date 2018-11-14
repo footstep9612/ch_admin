@@ -1,0 +1,309 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">编辑广告</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=cms_ad">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+
+        <div class="tab-pane fade in active" id="no2">
+
+            <form class="form-horizontal"   method="post" id="form01">
+                <input type="hidden" name="id" value="{$adInfor.id}">
+                <input type="hidden" name="medias_id" value="{$adInfor.medias_id}">
+                <input type="hidden" name="page" value="{$page}">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">广告标题：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="title" value="{$adInfor.title}" class="form-control" placeholder="广告标题">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">广告描述：</label>
+                    <div class="col-sm-6">
+                        <textarea rows="10" cols="80" name="ad_desc"  id="ad_desc" >{$adInfor.ad_desc}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span class="name_span">广告位位置</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <input type="radio" name="type" value="1"  {if $adInfor.type == 1 }checked {/if}> banner
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="type"  value="2" {if $adInfor.type == 2 }checked {/if}> 列表
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="type"  value="3" {if $adInfor.type == 3 }checked {/if}> 个人中心
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">跳转任务列表：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <!--<input type="radio" name="task_list" id="task_list" value="1"> task_list-->
+                        <select name="jump_list" id="jump_list" >
+                            <option value ="no_page" {if $adInfor.url == 'no_page' } selected {/if}>--请选择--</option>
+                            <option value ="task_list" {if $adInfor.url == 'task_list' } selected {/if}>跳任务中心页</option>
+                            <option value ="exchange" {if $adInfor.url == 'exchange' } selected {/if}>跳兑换中心页</option>
+                            <option value="invitation" {if $adInfor.url == "invitation" } selected {/if}>跳邀请好友页</option>
+                            <option value="article" {if $adInfor.url == 'article' } selected {/if}>跳帖子页</option>
+                            <option value="circle" {if $adInfor.url == 'circle' } selected {/if}>跳圈子页</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group" id="url_hide" {if $adInfor.link_type == '1' } style="display: show" {else} style="display: none"{/if}>
+                    <label  class="col-sm-2 control-label">广告跳转路径：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="urllink" {if $adInfor.link_type == 1 } value="{$adInfor.url}" {/if} class="form-control" placeholder="广告跳转路径">
+                    </div>
+                </div>
+                <div class="form-group" id="ac_id"  {if $adInfor.url == 'article' || $adInfor.url == 'circle' } style="display: show" {else} style="display: none"{/if}>
+                    <label  class="col-sm-2 control-label">帖子或圈子ID：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="ac_id" value="{$adInfor.ac_id}" class="form-control" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">开始时间：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="start_time" value="{$adInfor.start_time}" class="form-control" placeholder="开始时间" id="startTime">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">结束时间：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="end_time" value="{$adInfor.end_time}" class="form-control" placeholder="结束时间" id="endTime">
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">广告图片：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="hidden" name="medias_id" value="{$adInfor.img}">
+                        <div id="file-upload-pre" ><img width="200px" height="150px" src="{$adInfor.img}"></div>
+                        <!--<input type="text" class="form-control" name="credit_logo_url" size="60" id="form-credit-logo-url" readonly> (jpg/png)&nbsp;&nbsp;--><span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success" id="form-input-upload-logo-select" value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span class="name_span">状态</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status"  value="2" {if $adInfor.status == 2 }checked {/if}> 禁用
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status"  value="1" {if $adInfor.status == 1 }checked {/if}> 启用
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label"><span class="name_span">是否需要登陆：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="is_login" id="location_page" >
+                            <option value="0" {if $adInfor.is_login == 0 }selected {/if}>否</option>
+                            <option value="1" {if $adInfor.is_login == 1 }selected {/if}>是</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+
+                </div>
+
+
+            </form>
+
+        </div>
+        <!-- end 线下合同 -->
+
+
+    </div>
+    <hr/>
+
+
+</div>
+
+
+
+<script>
+    $("#startTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd',autoclose:true, minView: "month" });
+    $("#endTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd ', autoclose:true , minView: "month"});
+    var file_url =  window.location.pathname;
+    var uploaderLogo = new plupload.Uploader({
+        runtimes : 'html5,flash,silverlight,html4',
+        browse_button : 'form-input-upload-logo-select', // you can pass an id...
+        url : file_url+'?c=upload&a=upload_url&n=' + Math.random(),
+        flash_swf_url : 'admin/js/Moxie.cdn.swf',
+        silverlight_xap_url : 'admin/js/Moxie.cdn.xap',
+
+        filters : {
+            max_file_size : '10mb',
+            mime_types : [ //只允许上传图片和zip文件
+                { title : "Image files", extensions : "jpg,png" }
+            ]
+        },
+        init: {
+            PostInit: function() {
+                $(":input[name=imgs]").val('');
+                document.getElementById('form-input-upload-logo-button').onclick = function() {
+                    uploaderLogo.start();
+                    return false;
+                };
+            },
+            FileUploaded: function (uploader,file,responseObject){
+                try{
+                    var data = JSON.parse(responseObject.response);
+                    $("#file-upload-pre").html('<img width="200px" height="150px" src="'+ data.url+ '" />')
+                    console.log(data);
+                    $(":input[name=medias_id]").val(data.url);
+                    //$(":input[name=credit_logo_url]").val(data['data']['err_msg']['filename']['url']);
+                    //$("#form-logo-container").find('a').attr('href',data['data']['err_msg']['filename']['url']);
+                }catch (e){
+                    $("#form-logo-container").html('');
+                    throwExc('上传失败请稍后重试...');
+                    return ;
+                }
+            },
+            FilesAdded: function(up, files) {
+                var file =files.pop();
+                $("#file-upload-pre").html( file.name);
+            }
+        }
+    });
+    uploaderLogo.init();
+
+</script>
+<script>
+    function checkUrl(urlString){
+        if(urlString!=""){
+            var reg=/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
+            if(!reg.test(urlString)){
+                return false;
+            }else{
+                return true;
+            }
+        }
+    }
+    function load(page){
+        window.location.href = '?c=cms_ad&a=index&p='+page;
+    }
+    $(function () {
+
+        //跳转任务列表显示隐藏
+        $("#jump_list").click(function () {
+            var jump_list = $(this).val();
+            if(jump_list == 'task_list' || jump_list == 'exchange' || jump_list == 'invitation' || jump_list == 'article' || jump_list == 'circle')
+            {
+                $("#url_hide").hide();
+
+            }
+            if(jump_list == 'article' || jump_list == 'circle')
+            {
+                $("#ac_id").show();
+
+            }else{
+                $("#ac_id").hide();
+            }
+
+            if(jump_list == 'no_page')
+            {
+                $("#url_hide").show();
+
+            }
+
+
+
+        });
+
+
+
+        //提交表单
+        $("#submit").click(function () {
+            var title=$('input[name=title]').val();
+            var ad_desc=$('#ad_desc').val();
+            var medias_id=$('input[name=medias_id]').val();
+            //var task_list=$('input:radio[name="task_list"]:checked').val();
+            var jump_list = $('#jump_list option:selected').val();
+            var start_time = $('input[name=start_time]').val();
+            var end_time = $('input[name=end_time]').val();
+            var page = $('input[name=page]').val();
+            if(jump_list == 'no_page')
+            {
+                var url = $('input[name=urllink]').val();
+            }else{
+                var url = jump_list;
+            }
+
+            if(jump_list == 'article' || jump_list == 'circle'){
+                if($.trim(ac_id)==''){
+                    throwExc('帖子或者圈子ID必须填写');
+                    return false;
+                }
+            }
+
+            if($.trim(title)==''){
+                throwExc('标题必须填写');
+                return false;
+            }
+
+
+            if($.trim(ad_desc)==''){
+                throwExc('文章描述必须填写');
+                return false;
+            }
+            if($.trim(url)==''){
+                throwExc('跳转路径必须填写');
+                return false;
+            }else{
+                if(url == 'no_page')
+                {
+                    if(!checkUrl(url)){
+                        throwExc('不是正确的网址吧，请注意检查一下');
+                        return false;
+                    }
+                }
+            }
+            if($.trim(start_time)==''){
+                throwExc('开始时间必须填写');
+                return false;
+            }
+            if($.trim(end_time)==''){
+                throwExc('结束时间必须填写');
+                return false;
+            }
+            var start = new Date(start_time.replace("-", "/").replace("-", "/"));
+            var end = new Date(end_time.replace("-", "/").replace("-", "/"));
+            if(end<start){
+                throwExc('结束时间必须大于开始时间');
+                return false;
+            }
+
+            if($.trim(medias_id)==''){
+                throwExc('图片必须填写');
+                return false;
+            }
+            $.ajax({
+                "url": "?c=cms_ad&a=edit",
+                'type': 'POST',
+                'data': $('#form01').serialize(),
+                'dataType': 'json',
+                'success': function (response) {
+                    if (response.code == 0) {
+                        showSucc(response.message);
+                        setTimeout(load(page),1000);
+                    }
+                    else {
+                        throwExc(response.message);
+                        return false;
+                    }
+                }
+
+            });
+        });
+    });
+</script>
+{include file="footer.html"}

@@ -1,0 +1,249 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">修改入口</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=index&a=entrancelist">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 线下合同 -->
+        <div class="tab-pane fade in active" id="no2">
+            <form class="form-horizontal"   method="post" id="form01">
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">首页标题：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="type" value="{$list.title}" id="type" class="form-control">
+                    </div>
+                </div>
+                <!--<div class="form-group">-->
+                    <!--<div class="col-sm-7">-->
+                        <!--<input type="hidden" name="cate_img" value="1" id="cate_img" class="form-control">-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">文本上栏：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="candy_ad_desc_up" value="{$list.candy_ad_desc_up}" id="candy_up" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">文本下栏：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="candy_ad_desc_down" value="{$list.candy_ad_desc_down}" id="candy_down" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group" >
+                    <label  class="col-sm-2 control-label">内外部链接地址：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="link" id="link_type" onclick="is_neibu()" class="type">
+                            {foreach $link_url as $key=>$value}
+
+                            <option value ="{$key}" {if $key == $list.url} selected = "selected" {/if} >{$value} </option>
+
+                            {/foreach}
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group" id="locationId">
+                    <label  class="col-sm-2 control-label">跳转地址：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="url" value="{$list.url}" id="url" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">是否需要登陆：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="is_login" id="location_page" >
+                            <option value ="1" {if $list.is_login==1} selected = "selected" {/if}>否</option>
+                            <option value ="2" {if $list.is_login==2} selected = "selected" {/if}>是</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">按钮文本：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="button" value="{$list.button}" id="button" class="form-control">
+                    </div>
+                </div>
+                <!--<div class="form-group">-->
+                    <!--<label  class="col-sm-2 control-label">排序：</span><i>*</i></label>-->
+                    <!--<label class="radio-inline">-->
+                        <!--<select name="sort" id="sort" >-->
+                            <!--<option value ="1" {if $list.sort==1} selected = "selected" {/if}>左边显示 </option>-->
+                            <!--<option value ="2" {if $list.sort==2} selected = "selected" {/if}>右边显示</option>-->
+                        <!--</select>-->
+                    <!--</label>-->
+                <!--</div>-->
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">审核类型：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="auditing" id="auditing" >
+                            <option value ="1" {if $list.auditing==1} selected = "selected" {/if}>正常审核 </option>
+                            <option value ="2" {if $list.auditing==2} selected = "selected" {/if}>IOS审核</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">位置展示：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="coin_where" id="coin_where" >
+                            <option value ="1" {if $list.coin_where==1} selected = "selected" {/if}>首页 </option>
+                            <option value ="2" {if $list.coin_where==2} selected = "selected" {/if}>其他</option>
+                        </select>
+                    </label>
+                </div>
+                <div id="uploadFile" class="form-group">
+                    <label  class="col-sm-2 control-label">上传封面：</label>
+                    <div class="col-sm-2">
+                        <input type="hidden" id="file-0" name="background_image" value="{$list.back_image}">
+                        <div id="file-upload-pre" ><img  src="{$list.back_image}" width="200px" height="150px"></div>
+                        <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn" data-index="0"  value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span class="name_span">是否隐藏</span><i>*</i></label>
+                    {if $list.status==1}
+                    <label class="radio-inline">
+                        <input type="radio" name="status"  value="0" >隐藏
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status"  value="1" checked> 不隐藏
+                    </label>
+                    {else}
+                    <label class="radio-inline">
+                        <input type="radio" name="status"  value="0" checked>隐藏
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status"  value="1" > 不隐藏
+                    </label>
+                    {/if}
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <input type="hidden" name="id" value="{$list.id}" id="id">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- end 线下合同 -->
+        <input type="hidden" class="btn btn-success" id="mutile-btn" value="选择图片" />
+    </div>
+    <hr/>
+</div>
+<script>
+    var index = 0;
+    var files = [];
+    var uploadBtn = document.getElementById('uploadFile');
+    uploadBtn.addEventListener('click', function (e) {
+        var className = e.target.className;
+        if (className.indexOf('upload-btn') !== -1) {
+            index = +e.target.dataset.index;
+            document.getElementById('mutile-btn').click();
+        }
+    })
+
+    var file_url =  window.location.pathname;
+    var uploaderLogo = new plupload.Uploader({
+        runtimes : 'html5,flash,silverlight,html4',
+        browse_button : 'mutile-btn', // you can pass an id...
+        url : file_url+'?c=upload&a=upload_url&n=' + Math.random(),
+        flash_swf_url : 'admin/js/Moxie.cdn.swf',
+        silverlight_xap_url : 'admin/js/Moxie.cdn.xap',
+
+        filters : {
+            max_file_size : '10mb',
+            mime_types : [ //只允许上传图片和zip文件
+                { title : "Image files", extensions : "jpg,png,pdf" }
+            ]
+        },
+        init: {
+            PostInit: function() {
+                uploadBtn.addEventListener('click', function (e) {
+                    var className = e.target.className;
+                    if (className.indexOf('confirm-btn') !== -1) {
+                        uploaderLogo.start();
+                        return false;;
+                    }
+                })
+            },
+            FileUploaded: function (uploader,file,responseObject){
+
+                try{
+                    var fileid = '#file-'+index;
+                    var data = JSON.parse(responseObject.response);
+                    if(data.types=='pdf'){
+                        $(fileid+"+#file-upload-pre").html('<font color=green>文件上传成功</font>');
+                    }else{
+                        $(fileid+"+#file-upload-pre").html('<img width="200px" height="150px" src="'+ data.url+ '" />');
+                    }
+                    $(fileid).val(data.url);
+                }catch (e){
+                    $("#form-logo-container").html('');
+                    throwExc('上传失败请稍后重试...');
+                    return ;
+                }
+            },
+            FilesAdded: function(up, files) {
+                var file =files.pop();
+                var fileid = '#file-'+index;
+                $(fileid+"+#file-upload-pre").html( file.name);
+            }
+        }
+    });
+    uploaderLogo.init();
+    //以上为图片上传代码，一下问表单提交代码
+    function load(){
+        window.location.href = '?c=index&a=entranceList';
+    }
+
+    $(function () {
+        //提交表单
+        $("#submit").click(function () {
+            var id = $("#id").val();
+            var link_type = $("#link_type").val();
+            var url = $("#url").val();
+            var button = $("#button").val();
+            var candy_up = $("#candy_up").val();
+            if($.trim(candy_up)=='' || $.trim(id)=='' || $.trim(link_type)=='' ||  $.trim(button)==''){
+                throwExc('有未填写的信息');
+                return false;
+            }
+            $.ajax({
+                "url": "?c=index&a=entranceEdit",
+                'type': 'POST',
+                'data': $('#form01').serialize(),
+                'dataType': 'json',
+                'success': function (data) {
+                    if (data.error != 0) {
+                        layer.alert(data.message);
+                        setTimeout("load()",1000)
+                    } else {
+                        layer.alert(data.message);
+                        return false;
+                    }
+                }
+            });
+        })
+    })
+    //隐藏url
+    var options=$("#link_type option:selected").val();
+    if(options=='exchange'||options=='task_list'){
+        $("#locationId").hide();
+    }
+    //圈子隐藏列表
+    function is_neibu(){
+        var options=$("#link_type option:selected").val();
+        if(options == 'exchange'||options == 'task_list')
+        {
+            $("#locationId").hide();
+        }
+        if(options == 'wblink'){
+            $("#locationId").show();
+        }
+    };
+</script>
+{include file="footer.html"}

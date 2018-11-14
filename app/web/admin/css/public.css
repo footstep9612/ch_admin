@@ -1,0 +1,326 @@
+/*css*/
+.public-alert
+{
+    position: fixed;
+    top:50%;
+    left:50%;
+    z-index:100;
+    margin-left:-200px;
+    margin-top:-300px;
+    width: 400px;
+    height:600px;
+    background:#fff;
+}
+.public-alert-over
+{
+    float: left;
+    width:415px;
+    max-height:555px;
+    min-height:555px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.public-alert-title
+{
+    position: relative;
+    float: left;
+    width: 100%;
+    height:45px;
+    background: #353535;
+    color:#fff;
+    line-height: 45px;
+    text-align: center;
+}
+.close-public-icon
+{
+    position:absolute;
+    width:15px;
+    height:15px;
+    line-height: 15px;
+    top:15px;
+    right:15px;
+    cursor: pointer;
+}
+.public-alert-conent
+{
+    float: left;
+    width:400px;
+    overflow: hidden;
+    border:1px solid #353535;
+}
+/*用户节分详情列表样式*/
+.intergal-list
+{
+    float: left;
+    width:100%;
+}
+.intergal-list>div
+{
+    float: left;
+    padding:10px;
+    width:400px;
+    border-bottom: 1px solid #ccc;
+}
+.intergal-content
+{
+    display: block;
+    float: left;
+    width: 250px;
+}
+
+.intergal-content>span
+{
+    display: block;
+    float: left;
+    width:100%;
+    height:25px;
+    line-height: 25px;
+    white-space: nowrap;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}
+.intergal-num
+{
+    display: block;
+    float:right;
+    width:105px;
+    height:50px;
+    line-height: 50px;
+    color:#1f7712 !important;
+    font-size:20px;
+    text-align:right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -moz-overflow: hidden;
+    -ms-overflow: hidden;
+    overflow: hidden;
+}
+.intergal-time
+{
+    color:#999;
+}
+.hidden
+{
+    display: none !important;
+}
+.load-more
+{
+    float: left;
+    width: 100%;
+    height:70px;
+    line-height: 70px;
+    text-align: center;
+    cursor: pointer;
+}
+#form>input[type='text']
+{
+    margin-left:10px;
+    padding:5px;
+    width:170px;
+    height:40px;
+    background:#f5f5f5;
+    border:1px solid #ccc;
+    outline: none;
+
+}
+#form .phone
+{
+    margin-left:0;
+}
+#form>span
+{
+    display: inline-block;
+    margin:0 10px;
+    height:40px;
+    color:#999;
+}
+#form .date
+{
+    width:90px !important;
+}
+.inter
+{
+    width: 70px !important;
+}
+.nickname
+{
+    width: 130px !important;
+}
+.inter-span
+{
+    margin-left:20px !important;
+    width:10px;
+
+}
+.search,.clear-search
+{
+    margin-left:10px;
+    width:80px;
+    height:40px;
+    padding:5px 10px;
+    background: #353535;
+    color:#fff;
+    border:0;
+    outline: none;
+}
+.important
+{
+    margin-left:10px;
+    width:80px;
+    height:40px;
+    padding:5px 10px;
+}
+.clear-search
+{
+    background: #ccc;
+}
+.table>thead th
+{
+    background: #353535;
+    color: #fff;
+    font-weight: normal;
+    line-height:30px !important;
+    border-bottom:0 !important;
+}
+.table>thead th a
+{
+    font-weight: bold !important;
+    color:#fff;
+    font-size:21px !important;
+    text-decoration: none;
+}
+.intergal-detail
+{
+    color:#63a8ff !important;
+    font-weight:bold;
+    cursor: pointer;
+}
+.search-keyword
+{
+    width: 200px !important;
+}
+.all-date
+{
+    width:160px !important;
+}
+
+/**弹入弹出动画**/
+@keyframes show {
+    from{
+        transform: scale(.5);
+    }to{
+        transform: scale(1);
+    }
+}
+@-webkit-keyframes show {
+    from{
+        transform: scale(0);
+    }to{
+         transform: scale(1);
+    }
+}
+@-moz-keyframes show {
+    from{
+        transform: scale(.5);
+    }to{
+         transform: scale(1);
+     }
+}
+@-ms-keyframes show {
+    from{
+        transform: scale(.5);
+    }to{
+         transform: scale(1);
+     }
+}
+@-o-keyframes show {
+    from{
+        transform: scale(.5);
+    }to{
+         transform: scale(1);
+     }
+}
+
+@keyframes hide {
+    from{
+      transform: scale(1);
+    }to{
+      transform: scale(0);
+    }
+}
+@-webkit-keyframes hide {
+    from{
+        transform: scale(1);
+    }to{
+         transform: scale(0);
+     }
+}
+@-moz-keyframes hide {
+    from{
+        transform: scale(1);
+    }to{
+         transform: scale(0);
+     }
+}
+@-ms-keyframes hide {
+    from{
+        transform: scale(1);
+    }to{
+         transform: scale(0);
+     }
+}
+@-o-keyframes hide {
+    from{
+        transform: scale(1);
+    }to{
+         transform: scale(0);
+     }
+}
+
+.alertShow
+{
+    animation: show ease-out;
+    -webkit-animation: show .3s  ease-out;
+    -moz-animation: show  .3s ease-out;
+    -ms-animation: show .3s ease-out;
+}
+
+.alertHide
+{
+    animation: hide .5s ease-out;
+    -webkit-animation: hide .5s  ease-out;
+    -moz-animation: hide  .5s ease-out;
+    -ms-animation: hide .5s ease-out;
+    animation-fill-mode: forwards;
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-fill-mode: forwards;
+    -ms-animation-fill-mode:forwards;
+}
+
+
+.public-master
+{
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:10000;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,.5);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

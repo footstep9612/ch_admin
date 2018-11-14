@@ -1,0 +1,195 @@
+{include file="header.html"}
+<style>
+    .adminstatus { cursor:pointer;}
+</style>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">搜索圈子推荐</h2>
+        <div style="float: right;margin-right: 100px;margin-top: 25px;">
+            <form name="form1" class="form-inline" method="" action="" >
+                <div class="form-group">
+                    <select class="form-control datetimepicker">
+                        {foreach $allCoin as $coin}
+                        <option value="{$coin.coin_id}" coin_symbol="{$coin.coin_symbol}" img_from_url="{$coin.img_from_url}">{$coin.coin_name}</option>
+                        {/foreach}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <a href="javascript:void(0)" class="btn btn-success" onclick="circleAdd()">添加</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div style="clear:both"></div>
+
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="col-sm-1">ID</th>
+                    <th class="col-sm-1">分类ID</th>
+                    <th class="col-sm-1">圈子名称</th>
+                    <th class="col-sm-1">圈子简介</th>
+                    <th class="col-sm-1">顺序</th>
+                    <th class="col-sm-1">操作</th>
+                </tr>
+                </thead>
+                <tbody class="body post-append">
+                {if $list}
+                {foreach $list as $item}
+                <tr id="{$item.id}" sort="{$item.sort}">
+                    <td>{$item.id}</td>
+                    <td>{$item.coin_id}</td>
+                    <td>{$item.coin_name}</td>
+                    <td>{$item.coin_symbol}</td>
+                    <td>
+                        <a href="javascript:void(0)" onclick="moveUp(this)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                        &nbsp;&nbsp;
+                        <a href="javascript:void(0)" onclick="moveDown(this)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                    </td>
+                    <td>
+                        <a href="javascript:void(0)" class="del btn btn-danger btn-xs status" onclick=update("{$item.id}")>删除</a>
+                    </td>
+                </tr>
+                {/foreach}
+                {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{include file="footer.html"}
+<script type="text/javascript">
+    //圈子添加
+    function circleAdd(){
+        var params = {};
+        params['coin_id']=$(".datetimepicker option:selected").val();
+        params['coin_name']=$(".datetimepicker option:selected").attr("coin_symbol");
+        params['img_from_url']=$(".datetimepicker option:selected").attr("img_from_url");
+        params['coin_symbol']=$(".datetimepicker option:selected").text();
+        $.ajax({
+            type : "post",
+            url : "?c=search_circle_recommend&a=circleAdd",
+            data:  params,
+            async : true,
+            dataType:'json',
+            success : function(response){
+                if(response.code == 0){
+                    showSucc(response.message);
+                    //拼接url
+                    setTimeout(load(),1000);
+                }else if(response.code == 2){
+                    throwExc(response.message);return false;
+                }else{
+                    throwExc(response.message);return false;
+                }
+            }
+        });
+    }
+    //删除
+    function update(id) {
+        layer.confirm('确定要删除吗！', {
+            btn: ['删除', '不删'] //可以无限个按钮
+            , btn3: function (index, layero) {
+            }
+        }, function (index, layero) {
+            ajaxSend(id,'-1');
+        }, function (index,layero) {
+            layer.close(index);
+        });
+    }
+    function ajaxSend(id,status)
+    {
+        $.ajax({
+            type : "post",
+            url : "?c=search_circle_recommend&a=searchDelete",
+            data: "id=" + id +'&status='+ status,
+            async : true,
+            dataType:'json',
+            success : function(response){
+                console.log(response);
+                if(response.code == 0){
+                    showSucc(response.message);
+                    //拼接url
+                    setTimeout(load(),1000);
+                }else{
+                    throwExc(response.message);return false;
+                }
+            }
+        });
+    }
+    //排序
+    function moveUp(_a){
+        var _row = _a.parentNode.parentNode;
+        //如果不是第一行，则与上一行交换顺序
+        var _node = _row.previousSibling;
+        while(_node && _node.nodeType != 1){
+            _node = _node.previousSibling;
+        }
+        if(_node){
+            swapNode(_row,_node);
+        }else{
+            throwExc('已经是第一位');
+        }
+    }
+    function moveDown(_a){
+        var _row = _a.parentNode.parentNode;
+        //如果不是最后一行，则与下一行交换顺序
+        var _node = _row.nextSibling;
+        while(_node && _node.nodeType != 1){
+            _node = _node.nextSibling;
+        }
+        if(_node){
+            swapNode(_row,_node);
+        }else{
+            throwExc('已经是最后一位');
+        }
+    }
+    function swapNode(node1,node2){
+        //获取父结点
+        var _parent = node1.parentNode;
+        //获取两个结点的相对位置
+        var _t1 = node1.nextSibling;
+        var _t2 = node2.nextSibling;
+        if(!updateSort(node1,node2)){
+            return false;
+        }
+        //将node2插入到原来node1的位置
+        if(_t1)_parent.insertBefore(node2,_t1);
+        else _parent.appendChild(node2);
+        //将node1插入到原来node2的位置
+        if(_t2)_parent.insertBefore(node1,_t2);
+        else _parent.appendChild(node1);
+    }
+
+    function updateSort(_t1,_t2)
+    {
+        var return_res = false;
+        var params = {};
+        var sort1 = $(_t2).attr('sort');
+        var sort2 = $(_t1).attr('sort');
+        params['id'] = $(_t1).attr('id')+","+$(_t2).attr('id');
+        params['sort'] = sort1+","+sort2;
+
+        $.ajax({
+            type : "post",
+            url : "?c=search_circle_recommend&a=update_sort",
+            data:  params,
+            async : false,
+            dataType:'json',
+            success : function(response){
+                if(response.code == 1){
+                    throwExc(response.message);
+                }else{
+                    $(_t1).attr('sort',sort1);
+                    $(_t2).attr('sort',sort2);
+                    return_res = true;
+                    showSucc(response.message);
+                }
+            }
+        });
+        return return_res;
+    }
+</script>

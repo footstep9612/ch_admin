@@ -1,0 +1,113 @@
+
+<nav class="navbar navbar-inverse navbar-fixed-top navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="admin.php?c=index&a=index">必牛后台</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+
+
+                <li><a href="">管理员： {$CURRENT_USER}</a></li>
+                <!--<li><a href="javascript:;" onclick="update_passport();">（修改密码）</a></li>-->
+                <li><a href="admin.php?a=logout&c=login">退出</a></li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+<div class="container-fluid" id="authUrlList">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            {foreach from=$rbacList item=item}
+            <li class="active"  >
+                <!-- <span class="active">{$item.remark}</span>-->
+                <a>{$item.remark}</a>
+                <ul class="nav nav-sidebar" style="display:none">
+
+                    {foreach from=$item.child item=controls}
+                    <li class="{if $controls.controller==$smarty.get.c && $controls.action==$smarty.get.a}on{/if}" id="{$controls.controller}"><a href="{$controls.url}" class="admin_url">{$controls.remark}</a></li><!--  class="{if $smarty.get.c eq $controls.controller}active{/if}" -->
+                    {/foreach}
+                </ul>
+            </li>
+
+            {/foreach}
+        </div>
+    </div>
+</div>
+<script>
+    var c = getUrlParam("c");
+    $('.admin_url').each(function(){
+         if("{$smarty.get.c}" == c){
+              $('#'+c).attr('class','on').parent().css('display','block');
+         }
+    });
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null) return unescape(r[2]); return null; //返回参数值
+    }
+
+    var b = '';
+
+    $(document).on("click",'.row .sidebar .active',function(){
+        controller = $(this).children('ul').attr('id');
+        if($.trim(b) != null){
+            //console.log(b)
+            if(controller != b){
+                $('#'+b).slideUp(500);
+                $(this).removeClass("a")
+                b = controller;
+            }
+        }else{
+            b = controller;
+        }
+
+        if($(this).hasClass("a")){
+            $(this).find("ul").slideUp(500)
+            $(this).removeClass("a")
+        }else{
+            $(this).find("ul").slideDown(500)
+
+            $(this).addClass("a")
+
+        }
+
+    })
+
+
+
+
+    function update_passport()
+    { 
+        layer.prompt({
+          'title':"请输入新密码",
+          formType: 1,
+        }, function(value, index, elem){
+            if(!confirm('确定要修改密码吗？')){
+              layer.close(index);   return false;
+            }
+            $.post("?c=admin_user&a=update_passport",{ 
+               "password":value
+            },function( response ){
+                if(response.error==100) {
+                    throwExc(response.msg);  return false;
+                }else if(response.error==200) {
+                    showSucc(response.msg);  setTimeout("load()",1000);
+                }
+            },"json");
+        });
+    }
+
+    function load(){
+        window.location.href=window.location.href;
+    }
+
+</script>
+

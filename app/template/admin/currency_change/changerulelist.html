@@ -1,0 +1,111 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">兑换活动列表&nbsp;&nbsp;<small>changeRuleList</small></h2>
+
+    <a href="?c=currency_change&a=addChangeRule" class="btn btn-success">添加</a>
+
+
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <!-- <th><input type="checkbox"></th> -->
+                    <th colspan="1" rowspan="1">兑换规则ID</th>
+                    <th class="col-sm-1">币种logo</th>
+                    <th class="col-sm-1">币种简称</th>
+                    <th class="col-sm-1">兑换比例</th>
+                    <th class="col-sm-1">兑换上限</th>
+                    <th class="col-sm-1">兑换下限</th>
+                    <th class="col-sm-1">开始时间</th>
+                    <th class="col-sm-1">结束时间</th>
+                    <th class="col-sm-1">规则文案</th>
+                    <th class="col-sm-1">启用状态</th>
+                    <th class="col-sm-1">操作</th>
+                </tr>
+                </tr>
+                </thead>
+                <tbody>
+                {if $currencyrulemsg}
+                {foreach $currencyrulemsg as $key=>$item}
+                <tr>
+                    <!--<td><input class="ids" type="checkbox" value="{$item.id}-{$item.id}" name="id[]"></td>  -->
+                    <td>{$item.id}</td>
+                    <td><img src="{$item.currency_logo}" alt="" width="60" height="60"></td>
+                    <td>{$item.currency_name}</td>
+                    <td>{$item.change_proportion}(BNF/ICO)</td>
+                    <td>{$item.change_toplimit}</td>
+                    <td>{$item.change_lowerlimit}</td>
+                    <td>{$item.start_time}</td>
+                    <td>{$item.end_time}</td>
+                    <td>{$item.rule_desc}</td>
+                    <td>{if $item.status ==1} 已启用{else} 已禁用{/if}</td>
+                    <td>
+                        <a href="?c=currency_change&a=upChangeRule&id={$item.id}&coin_id={$item.coin_id}" class="btn btn-primary btn-xs szpq">编辑</a>
+                        {if $item.status ==1 }
+                        <a href="javascript:void(0);"  class="btn btn-danger btn-xs start" pid="{$item.id}">禁用</a>
+                        {else}
+                        <a href="javascript:void(0);"  class="btn btn-success btn-xs start" pid="{$item.id}">启用</a>
+                        {/if}
+                        <a href="javascript:void(0);"  class="btn btn-danger btn-xs status" pid="{$item.id}">删除</a>
+                    </td>
+                    <!---<td>{if $item.integral_total neq ""}{$item.integral_total}{else}0.00{/if}</td>--->
+                </tr>
+                {/foreach}
+                {/if}
+
+                </tbody>
+            </table>
+            <!--<div>{if isset($pageNum)}{$pageNum}{/if}</div>-->
+        </div>
+
+        <!-- end 已上线 -->
+    </div>
+
+</div>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+    $(function(){
+        $(".status").click(function(){
+            var id=$(this).attr('pid');
+            if(!id){ throwExc('没有参数');return false };
+            if(!confirm('确认删除吗')){
+                return false;
+            }
+            $.ajax({
+                type : "post",
+                url : "?c=currency_change&a=deleteChangeRule",
+                data: "id=" + id,
+                async : false,
+                dataType:'json',
+                success : function(response){
+                    console.log(response)
+                    if(response.code == 0){
+                        window.location.href=window.location.href;
+                    }else{
+                        throwExc(response.message);return false;
+                    }
+                }
+            });
+
+        })
+    });
+    $(function(){
+        $(".start").click(function(){
+            var id=$(this).attr('pid');
+            var msg=$(this).html();
+            if(msg=='禁用'){
+                msg='禁用';
+            }else{
+                msg='启动';
+            }
+            if(confirm('你确定要'+msg+"吗？")){
+                window.location.href="?c=currency_change&a=upchangeRuleStatus&id="+id;
+            }
+        });
+    })
+</script>

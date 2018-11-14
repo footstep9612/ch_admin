@@ -1,0 +1,170 @@
+{include file="header.html"}
+<style>
+    .adminstatus { cursor:pointer;} 
+</style>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">合作方列表</h2>
+    </div>
+
+    <div style="clear:both"></div>
+    <form name="form1" class="form-inline" method="post" action="">
+    <a href="?c=partners_management&a=partnersAdd" class="btn btn-success">添加</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div class="form-group">
+            <label for="coin_id" class="input-group">合作方：</label>
+            <div class="input-group">
+                <select class="form-control datetimepicker" id="user_id" name="user_id">
+                    <option value="0" >请选择</option>
+                    {if $partnerList}
+                    {foreach $partnerList as $v}
+                    <option value="{$v.id}" {if $searchs.user_id=="{$v.id}" } selected {/if}>{$v.name}</option>
+                    {/foreach}
+                    {/if}
+                </select>
+            </div>
+        </div>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div class="form-group">
+            <label for="coin_id" class="input-group">圈子：</label>
+            <div class="input-group">
+                <select class="form-control datetimepicker" id="coin_id" name="coin_id">
+                    <option value="0" >请选择</option>
+                    {if $coinList}
+                    {foreach $coinList as $v1}
+                    <option value="{$v1.id}" {if $searchs.coin_id=="{$v1.id}" } selected {/if}>{$v1.coin_symbol}（{$v1.coin_name}）</option>
+                    {/foreach}
+                    {/if}
+                </select>
+            </div>
+        </div>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div class="form-group">
+            <label for="status" class="input-group">状态</label>
+            <div class="input-group">
+                <select class="form-control datetimepicker" id="status" name="status">
+                    <option value="0" {if $searchs.status == "0"} selected {/if}>正常</option>
+                    <option value="-1" {if $searchs.status=="-1"} selected {/if}>删除</option>
+                </select>
+            </div>
+        </div>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div class="form-group">
+            <input type="submit" class="form-control" name="submit" value="筛选">
+        </div>
+        <div class="form-group">
+            <a href="?c=partners_management&a=clear" class="btn btn-success">清空</a>
+        </div>
+    </form>
+    <br/>
+    <div style="clear:both"></div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="col-sm-1">ID</th>
+                    <th class="col-sm-2">合作方</th>
+                    <th class="col-sm-3">圈子</th>
+                    <th class="col-sm-1">状态</th>
+                    <th class="col-sm-2">创建时间</th>
+                    <th class="col-sm-1">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {if $list}
+                {foreach $list as $item}
+                <tr>
+                    <td>{$item.id}</td>
+                    <td>{$item.name}</td>
+                    <td>{$item.coin_symbol}</td>
+                    <td id="status_{$item.id}">
+                        {if $item.status==-1}
+                            <font color="#a52a2a">已删除</font>
+                        {else if $item.status==0}
+                            <button onclick='changeStatus("{$item.id}","{$item.status}",2)'><font color="#a52a2a">已禁用</font></button>
+                        {else}
+                            <button onclick='changeStatus("{$item.id}","{$item.status}",2)'><font color="#006400">已启用</font></button>
+                        {/if}
+                    </td>
+                    <td id="time_{$item.id}">{$item.create_time}</td>
+                    <td id="done_{$item.id}">
+                        {if $item.status>=0}
+                        <a href="?c=partners_management&a=partnersEdit&id={$item.id}" class="btn btn-primary btn-xs">编辑</a>
+                        <a href="javascript:;"  class="btn btn-info btn-xs" onclick='update("{$item.id}",1)'>删除</a>
+                        {/if}
+                    </td>
+                </tr>
+                {/foreach}
+                {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div >{if isset($total_num)} <span style="font-size: 25px;">总计{$total_num}条{/if}</span></div>
+    <div>{if isset($page_num)}{$page_num}{/if}</div>
+</div>
+{include file="footer.html"}
+<script type="text/javascript">
+    //删除
+    function update(id,sign) {
+        layer.confirm('确定删除吗', {
+            btn: ['删除', '不删'] //可以无限个按钮
+            , btn3: function (index, layero) {
+            }
+        }, function (index, layero) {
+            $.ajax({
+                type : "post",
+                url : "?c=partners_management&a=upStatus",
+                data: "id=" + id + "&sign="+sign,
+                async : true,
+                dataType:'json',
+                success : function(response){
+                    if(response.code == 200){
+                        showSucc(response.msg);
+                        setTimeout(load(),1000);
+                    }else{
+                        throwExc(response.msg);return false;
+                    }
+                }
+            });
+        }, function (index,layero) {
+            layer.close(index);
+        });
+    }
+
+    //开启关闭
+    function changeStatus(id,status,sign) {
+        if(status == 0){
+            status = 1;
+            var title = '开启';
+        }else{
+            status = 0;
+            var title = '禁用';
+        }
+        layer.confirm("确定"+title+"吗？", {
+            btn: ['是', '否'] //可以无限个按钮
+            , btn3: function (index, layero) {
+            }
+        }, function (index, layero) {
+            $.ajax({
+                type : "post",
+                url : "?c=partners_management&a=upStatus",
+                data: "id=" + id +'&status='+ status + "&sign="+sign,
+                async : true,
+                dataType:'json',
+                success : function(response){
+                    if(response.code == 200){
+                        showSucc(title+'成功');
+                        setTimeout(load(),1000);
+                    }else{
+                        throwExc(response.msg);return false;
+                    }
+                }
+            });
+        }, function (index,layero) {
+            layer.close(index);
+        });
+    }
+</script>

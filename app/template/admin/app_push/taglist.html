@@ -1,0 +1,85 @@
+{include file="header.html"}
+<style>
+    .adminstatus { cursor:pointer;} 
+</style>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">推送测试列表</h2>
+    </div>
+
+    <br/>
+    <form name="form1" class="form-inline" method="post"  action="">
+       <div class="form-group">
+            &nbsp; &nbsp; &nbsp;
+            <div class="form-group">
+                添加用户：<input type="text" class="form-control" name="username" value="" placeholder="手机号" size="40">
+            </div> 
+
+            <button type="submit" class="btn btn-default" onClick="form1.submit();">添加</button>
+        </div>
+    </form>
+
+    <div style="clear:both"></div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="col-sm-1">UID</th>
+                    <th class="col-sm-1">手机号</th>
+                    <th class="col-sm-1">昵称</th>
+                    <th class="col-sm-1">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {if $result}
+                {foreach $result as $k=>$item}
+                <tr>
+                    <td>{$item.id}</td>
+                    <td>{$item.username}</td>
+                    <td>{$item.nickname}</td>
+                    <td>
+                         <a href="javascript:;" class="btn btn-danger btn-xs status" pid="{$item.id}">删除</a>
+                   </td>
+               </tr>
+               {/foreach}
+               {/if}
+               </tbody>
+           </table>
+       </div>
+   </div>
+</div>
+</div>
+</div>
+</body>
+
+{include file="footer.html"}
+<script type="text/javascript">
+   $(function(){
+       $(".status").click(function(){
+           var id=$(this).attr('pid');
+           if(!id){ throwExc('没有参数');return false };
+           if(!confirm('确认删除吗')){
+               return false;
+           }
+           $.ajax({
+               type : "post",
+               url : "?c=app_push&a=remove",
+               data: "id=" + id,
+               async : false,
+               dataType:'json',
+               success : function(response){
+                   console.log(response)
+                   if(response.code == 0){
+                       window.location.href=window.location.href;
+                   }else{
+                       throwExc(response.message);return false;
+                   }
+               }
+           });
+
+   })
+   })
+
+</script>

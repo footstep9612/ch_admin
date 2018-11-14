@@ -1,0 +1,155 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">兼职列表&nbsp;&nbsp;<small>jianzhi</small>
+
+        <p style="float: right">总发帖量：昨天 {$data.yestday}/ 七天 {$data.seven_day}/ 总量 {$data.all_day}/</p>
+    </h2>
+
+
+
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="col-sm-1">ID</th>
+                    <th class="col-sm-1">用户名</th>
+                    <th class="col-sm-1">角色</th>
+                    <th class="col-sm-1">创建时间</th>
+                    <th class="col-sm-1">登录时间</th>
+                    <th class="col-sm-1">发帖量(昨天/七天/总量)</th>
+                    <th class="col-sm-1">状态</th>
+                </tr>
+                </tr>
+                </thead>
+                <tbody>
+                {if $result}
+                {foreach $result as $key=>$item}
+                <tr id="{$item.id}">
+                    <td>{$item.id}</td>
+                    <td>{$item.name}</td>
+                    <td>兼职撰稿人</td>
+                    <td>{$item.create_time}</td>
+                    <td>{$item.last_time}</td>
+                    <td>
+                        {$item.yestday}/{$item.seven_day}/{$item.all_day}
+                    </td>
+                    <td>{if $item.is_del ==Model\Pub::STATUS_ENABLE}
+                        <span class="adminstatus adminoffline">禁用</span>
+                        {else}
+                        <span class="adminstatus adminonline">启用</span>
+                        {/if}</td>
+                </tr>
+                {/foreach}
+                {/if}
+
+                </tbody>
+            </table>
+        </div>
+
+        <!-- end 已上线 -->
+    </div>
+
+</div>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+    $(function(){
+        $(".delete").click(function(){
+            var id=$(this).attr('pid');
+            if(!id){ throwExc('没有参数');return false };
+            if(!confirm('确认删除吗')){
+                return false;
+            }
+            $.ajax({
+                type : "post",
+                url : "?c=category&a=coinlistremove",
+                data: "id=" + id,
+                async : false,
+                dataType:'json',
+                success : function(response){
+                    console.log(response)
+                    if(response.code == 0){
+                        window.location.href=window.location.href;
+                    }else{
+                        throwExc(response.message);return false;
+                    }
+                }
+            });
+
+        })
+    })
+
+
+    function moveUp(_a){
+        var _row = _a.parentNode.parentNode;
+        //如果不是第一行，则与上一行交换顺序
+        var _node = _row.previousSibling;
+        while(_node && _node.nodeType != 1){
+            _node = _node.previousSibling;
+        }
+
+
+
+        if(_node){
+            swapNode(_row,_node);
+        }
+    }
+    function moveDown(_a){
+        var _row = _a.parentNode.parentNode;
+        //如果不是最后一行，则与下一行交换顺序
+        var _node = _row.nextSibling;
+        while(_node && _node.nodeType != 1){
+            _node = _node.nextSibling;
+        }
+        if(_node){
+            swapNode(_row,_node);
+        }
+    }
+    function swapNode(node1,node2){
+        //获取父结点
+        var _parent = node1.parentNode;
+        //获取两个结点的相对位置
+        var _t1 = node1.nextSibling;
+        var _t2 = node2.nextSibling;
+        if(!updateSort(node1,node2)){
+            return false;
+        }
+        //将node2插入到原来node1的位置
+        if(_t1)_parent.insertBefore(node2,_t1);
+        else _parent.appendChild(node2);
+        //将node1插入到原来node2的位置
+        if(_t2)_parent.insertBefore(node1,_t2);
+        else _parent.appendChild(node1);
+    }
+
+
+
+    function updateSort(_t1,_t2)
+    {
+        var return_res = false;
+        var params = {};
+        params['id'] = $(_t1).attr('id')+","+$(_t2).attr('id');
+        params['sort'] = ($(_t2).index()+1)+","+($(_t1).index()+1);
+        $.ajax({
+            type : "post",
+            url : "?c=category&a=update_sort",
+            data:  params,
+            async : false,
+            dataType:'json',
+
+            success : function(response){
+                if(response.code == 1){
+                    throwExc(response.message);
+                }else{
+                    return_res = true;
+                    showSucc(response.message);
+                }
+            }
+        });
+        return return_res;
+    }
+</script>

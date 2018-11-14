@@ -1,0 +1,345 @@
+{include file="header.html"}
+<style>
+    .submit-form
+    {
+        display: inline-block;
+        padding:40px 20px 20px 20px;
+        width: 100%;
+        border:0 !important;
+    }
+    .submit-form>div
+    {
+        float: left;
+        margin-bottom:30px;
+        width:100%;
+    }
+    .submit-form>div>span
+    {
+        display: inline-block;
+        float: left;
+        width:80px;
+        height:45px;
+        line-height: 45px;
+        font-weight:bold;
+        font-size:16px;
+    }
+    .submit-form>div>input[type='text']
+    {
+        display: block;
+        float: left;
+        padding:0 10px;
+        height:45px;
+        width:360px;
+        line-height: 45px;
+    }
+    .submit-form>div>select
+    {
+        display: block;
+        float: left;
+        padding:0 10px;
+        width:100px;
+        height:45px;
+        text-align: center;
+    }
+    .button-list
+    {
+        text-align: center;
+    }
+    .button-list>input
+    {
+
+        width:100px;
+        height:40px;
+        border: 0;
+        outline: none;
+    }
+    .button-list>input[type='button']
+    {
+        margin-right:25px;
+        background: #101010;
+        color:#fff;
+    }
+</style>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">抽奖活动&nbsp;&nbsp;<small>prize</small></h2>
+    <!--查询条件列表Start-->
+    <div class="search-input">
+        <form action="" method="post" id="form">
+            <input type="button" class="search add-prize" value="添加奖品">
+        </form>
+    </div>
+    <!--查询条件列表End-->
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th colspan="1" rowspan="1">ID</th>
+                    <th >奖品名称</th>
+                    <th>奖品数量</th>
+                    <th >中奖几率</th>
+                    <th>状态</th>
+                    <th>操作时间</th>
+                    <th>操作</th>
+                </tr>
+                </tr>
+                </thead>
+                <tbody class="user_list">
+                {if $result}
+                {foreach $result as $k=>$v}
+                <tr>
+                    <td>{$v.id}</td>
+                    <td>
+                        {if $v.prize_name != 'TK'}
+                        {$v.prize_value}个{$v.prize_name}
+                        {else}
+                        谢谢参与
+                        {/if}
+                    </td>
+                    <td>{$v.prize_value}</td>
+                    <td>{$v.prize_ratio}%</td>
+                    <td>
+                        {if $v.status == 1}
+                        <font color="red">已禁用</font>
+                        {else}
+                        <font color="#006400">已启用</font>
+                        {/if}
+
+
+                    </td>
+                    <td>
+                        创建时间：<br/>
+                        {$v.create_time}
+                        {if $v.update_time}
+                        <br/><br/>
+                        修改时间：<br/>
+                        {$v.update_time}
+                        {/if}
+                    </td>
+                    <td>
+                        <a href="javascript:void(0);" data-id="{$v.id}"  class="update-prize">编辑|</a>
+                        <a href="javascript:void(0);" data-id="{$v.id}"  class="delete-prize">删除</a>
+                    </td>
+                </tr>
+                {/foreach}
+                {/if}
+
+                </tbody>
+            </table>
+            <div>
+                <span class="pageNum" style="display: block;float: left">共{$pageCount}条</span>
+                <span class="pageList" style="display: block;float: right">{if isset($pageNum)}{$pageNum}{/if}</span>
+            </div>
+        </div>
+        <!-- end 已上线 -->
+    </div>
+
+</div>
+</div>
+</div>
+
+<!--活动商品添加弹出-->
+<div class="public-master hidden" style="">
+    <div  class="public-alert  alertShow" style="margin-top:-200px;margin-left:-250px;height:400px;width: 500px;">
+        <div class="public-alert-title">
+            添加抽奖奖品
+            <span class="close-public-icon">✖</span>
+        </div>
+        <div class="">
+            <form action="admin.php?c=activity&a=oper_prize" class="submit-form">
+                <input type="hidden" name="id">
+                <div>
+                    <span>奖品数量：</span>
+                    <input type="text" name="prizevalue" placeholder="请输入奖品值" style="width:200px;">
+                    <select name="prizename" style="margin-left:10px;width: 150px;" >
+                        <option value="0">请选择币种</option>
+                        <option value="0|TK">谢谢参与</option>
+                        <option value="0|BNF">BNF</option>
+                        {if $coinList}
+                        {foreach $coinList as $k => $v}
+                        <option value="{$v.id}|{$v.coin_symbol}" >{$v.coin_symbol}</option>
+                        {/foreach}
+                        {/if}
+                    </select>
+                </div>
+                <div>
+                    <span>中奖概率:</span>
+                    <input type="text" name="prizeratio" placeholder="请输入中奖概率">
+                </div>
+                <div STYLE="margin-bottom:10px;">
+                    <span>是否启用:</span>
+                    <select name="prizestatus" id="">
+                        <option value="0">是</option>
+                        <option value="1">否</option>
+                    </select>
+                </div>
+                <div class="prize-error" style="margin: 10px 0;color:red;text-align: center;">
+                </div>
+                <div class="button-list">
+                    <input type="button" class="submit-add-prize" value="确认添加">
+                    <input type="reset" value="清空">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--活动商品添加弹出End-->
+
+</body>
+
+<script type="text/javascript">
+
+    //用户点击添加奖品
+    $(".add-prize").on("click",function(){
+        $("select[name='prizename']").val(0);
+        $("input[name='prizeratio']").val('');
+        $("input[name='prizevalue']").val('');
+        $("select[name='prizestatus']").val(0);
+        $("input[name='id']").val('');
+        $(".public-alert-title").html("添加抽奖奖品<span class='close-public-icon'>✖</span>");
+        $(".submit-add-prize").val("确认添加");
+        $(".public-master").removeClass("hidden");
+        $(".public-alert").removeClass("alertHide").addClass("alertShow");
+        $(".prize-error").text('');
+    })
+
+    //用户新增奖品
+    $(".submit-add-prize").on("click",function(){
+        var _this  = $(this),form=$(".submit-form");
+        //请求数据
+        $.ajax({
+            url:form.attr('action'),
+            type:'post',
+            data:form.serialize(),
+            success:function(result)
+            {
+                var data = eval("("+result+")");
+                if(data.code != 1001)
+                {
+                    $(".prize-error").text(data.msg);
+                    return false;
+                }
+                //成功
+                $(".prize-error").text('');
+
+                layer.alert(data.msg, {
+                    icon: 1,
+                    skin: 'layer-ext-moon' //该皮肤由layer.seaning.com友情扩展。关于皮肤的扩展规则，去这里查阅
+                },function(){
+                    window.location.reload();
+                })
+            }
+        })
+    })
+
+    //用户分页点击
+    $(document).on("click",".pageList a",function(){
+        var _this = $(this);
+        $.ajax({
+            url:_this.attr('data-url'),
+            success:function(result){
+                var data = eval("("+result+")");
+                if(data.code == 200)
+                {
+                    var html  = '';
+                    $.each(data.data,function(k,v){
+                        html += "<tr>"
+                            +"<td>"+v.id+"</td>"
+                            +"<td>"+(v.prize_name !='TK' ? v.prize_value+"个"+v.prize_name : '谢谢参与')+"</td>"
+                            +"<td>"+v.prize_value+"</td>"
+                            +"<td>"+v.prize_ratio+"%</td>"
+                            +"<td>"
+                            +(v.status == 1 ? " <font color='red'>已禁用</font>" : " <font color='#006400'>已启用</font>")
+                            +"</td>"
+                            +"<td>"
+                            +"创建时间：<br/>"+v.create_time
+                            +(v.update_time ? " <br/><br/>修改时间：<br/>"+v.update_time : "")
+                            +"</td><td><a href='javascript:void(0);' data-id="+v.id+" class='update-prize'>编辑|</a>"
+                            +"<a href='javascript:void(0);' data-id="+v.id+" class='delete-prize'>删除</a>"
+                            +"</td></tr>";
+                    });
+
+                    $(".user_list tr").remove();
+                    $(".user_list").append(html);
+                    $(".pageNum").text("共"+data.pageCount+"条");
+                    $(".pageList ul").remove();
+                    $(".pageList").append(data.pageHtml);
+                }
+            }
+        })
+    })
+
+
+    //用户点击修改按钮--查询信息
+    $(document).on("click",".update-prize",function(){
+        var _this = $(this);
+        $.ajax({
+            url:"admin.php?c=activity&a=selectPrizeDetail&id="+_this.attr('data-id'),
+            success:function(result){
+                var data = eval("("+result+")");
+                if(data.code == 200)
+                {
+                    //添加数据
+                    $("select[name='prizename']").val(data.data.coin_id+'|'+data.data.prize_name);
+                    $("input[name='prizeratio']").val(data.data.prize_ratio);
+                    $("input[name='prizevalue']").val(data.data.prize_value);
+                    $("select[name='prizestatus']").val(data.data.status);
+                    $("input[name='id']").val(data.data.id);
+                    $(".public-master").removeClass("hidden");
+                    $(".public-alert").removeClass("alertHide").addClass("alertShow");
+                    $(".public-alert-title").html("修改抽奖奖品<span class='close-public-icon'>✖</span>");
+                    $(".submit-add-prize").val("确认修改");
+                    $(".prize-error").text('');
+                }
+                else
+                {
+                    layer.msg(data.msg);
+                    return false;
+                }
+            }
+        })
+    })
+
+    //用户点击删除按钮
+    $(document).on("click",".delete-prize",function(){
+        var _this = $(this);
+        layer.confirm('您确定要删除？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            $.ajax({
+                url:"admin.php?c=activity&a=delete_prize&id="+_this.attr('data-id'),
+                success:function(result){
+                    var data = eval("("+result+")");
+                    if(data.code == 1001)
+                    {
+                        layer.alert(data.msg, {
+                            icon: 1,
+                            skin: 'layer-ext-moon' //该皮肤由layer.seaning.com友情扩展。关于皮肤的扩展规则，去这里查阅
+                        },function(){
+                            window.location.reload();
+                        })
+                    }
+                }
+            })
+        });
+    })
+
+
+
+
+
+
+
+
+
+    //用户点击关闭
+    $(document).on("click",".close-public-icon",function(){
+        $(".public-alert").removeClass("alertShow").addClass("alertHide");
+        setTimeout(function(){
+            $(".public-master").addClass("hidden");
+        },300)
+
+    })
+</script>

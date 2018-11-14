@@ -1,0 +1,82 @@
+{include file="header.html"}
+<style type="text/css">
+    .collapsed .expander{
+        background-image:url('admin/images/toggle-collapse-dark.png');
+    }
+    .expander .expander{
+        background-image:url('admin/images/toggle-expand-dark.png');
+    }
+
+</style>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">版本更新消息列表&nbsp;&nbsp;<small></small></h2>
+
+
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <form name="form1" class="form-inline" >
+            <div class="form-group">
+                <div class="form-group">
+                    消息内容:&nbsp;&nbsp;<input type="text" class="form-control" value="{if $message}{$message}{/if}" name="message" id="message">
+                </div>
+                <span class="btn btn-success" id="find_borrow_ad">查询</span>
+                <a href="?c=app_message&a=add" class="btn btn-success" id="add">添加</a>
+            </div>
+        </form>
+        <div>
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <!-- <th><input type="checkbox"></th> -->
+                    <th style="width:5%" colspan="1" rowspan="1">序号</th>
+                    <th style="width:8%">系统类型</th>
+                    <th style="width:5%">渠道</th>
+                    <th style="width:10%">版本</th>
+                    <th style="width:7%">内部版本</th>
+                    <th style="width:25%">消息内容</th>
+                    <th style="width:20%">链接地址</th>
+                    <th style="width:10%">强制升级</th>
+                    <th style="width:10%">过审弹窗</th>
+                    <th style="width:10%">操作</th>
+                </tr>
+
+                </thead>
+                <tbody>
+                {foreach from=$lists item=items }
+                <tr class="initialized parent collapsed expander">
+                    <td>{$items.id}</td>
+                    <td>{if $items.system eq 1}Ios{elseif $items.system eq 2}Android{/if}</td>
+                    <td>{$items.channel}</td>
+                    <td>{$items.version}</td>
+                    <td>{$items.ver_num}</td>
+                    <td>{$items.message}</td>
+                    <td>{$items.url}</td>
+                    <td>{if $items.is_update eq 1}是{else}否{/if}</td>
+                    <td>{if $items.is_examine eq 1}是{else}否{/if}</td>
+                    <td>
+                        <a href="?c=app_message&a=edit&id={$items.id}" class="btn btn-primary btn-xs szpq">修改</a>
+                        <span class="btn btn-danger btn-xs status" onclick="del('?c=app_message&a=del',{$items.id})">删除</span>
+                    </td>
+                </tr>
+                {/foreach}
+                </tbody>
+            </table>
+            <div>{$pageNum}</div>
+        </div>
+        <!-- end 已上线 -->
+    </div>
+
+</div>
+</div>
+</div>
+
+<script type="text/javascript">
+    $('#find_borrow_ad').click(function()
+    {
+        var message=$('#message').val();
+        window.location.href='?c=app_message&a=index&message='+message;
+    });
+</script>
+{include file="footer.html"}

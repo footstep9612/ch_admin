@@ -1,0 +1,365 @@
+{include file="header.html"}
+    <style lang="css">
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+        }
+
+        .mt-40 {
+            margin-top: 50px;
+        }
+
+        .header {
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .main {
+            margin-top: 45px;
+        }
+
+        .nav-tabs {
+            border: none;
+        }
+
+        .nav>li>a:focus,
+        .nav>li>a:hover {
+            background-color: #fff;
+        }
+
+        .nav-tabs>li>a,
+        .nav-tabs>li>a:hover {
+            border: none!important;
+        }
+
+        .nav-tabs>li.active>a,
+        .nav-tabs>li.active>a:focus,
+        .nav-tabs>li.active>a:hover {
+            background-color: #fff;
+            border: none!important;
+        }
+
+        .nav>li>a.item {
+            padding: 10px 8px;
+            border: none;
+        }
+
+        .table {
+            margin: 0;
+            padding-top: 10px;
+            padding-bottom: 5px;
+            height: 180px;
+            box-sizing: border-box;
+        }
+
+        .tab-content {
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .media:first-child {
+            margin-top: 15px;
+        }
+
+        .media .media-body {
+            text-align: center;
+        }
+
+        .media .media-body p {
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        .media .top-item {
+            padding: 40px 0;
+        }
+
+        .bd-right {
+            border-right: 1px #ddd solid;
+        }
+
+        .article-list {
+            position: relative;
+            margin-top: 35px;
+            padding-left: 40px;
+        }
+
+        .article-list::before {
+            position: absolute;
+            content: "文章阅读top3";
+            left: 15px;
+            top: -25px;
+            color: #aaa;
+        }
+
+        .article-list>li {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        .container {
+            width: 1350px!important;
+            padding-left: 160px;
+        }
+    </style>
+
+
+<body class="container">
+<h3 class="header">数据统计</h3>
+<div class="main row">
+    <div class="tj col-xs-9">
+        <ul class="nav nav-tabs container-fluid" role="tablist">
+            <li><a href="javascript: void 0">媒体统计</a></li>
+            <li role="presentation" class="active item"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">当天</a></li>
+            <li role="presentation"><a class="item" href="#profile" aria-controls="profile" role="tab" data-toggle="tab">7天</a></li>
+            <li role="presentation"><a class="item" href="#messages" aria-controls="messages" role="tab" data-toggle="tab">30天</a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content container-fluid">
+            <div role="tabpanel" class="tab-pane active" id="home">
+                <div class="table row">
+                    <div class="media col-xs-3">
+                        <div class="media-body top-item bd-right">
+                            <p>真实阅读次数</p>
+                            <h4 class="media-heading">{$day.article_view_nums}</h4>
+                        </div>
+                    </div>
+                    <div class="col-xs-9">
+                        <div class="row">
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>分享次数</p>
+                                    <h4 class="media-heading">{$day.article_share_nums}</h4>
+                                </div>
+                            </div>
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>点赞次数</p>
+                                    <h4 class="media-heading">{$day.article_liked_nums}</h4>
+                                </div>
+                            </div>
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>收藏次数</p>
+                                    <h4 class="media-heading">{$day.article_collection_nums}</h4>
+                                </div>
+                            </div>
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>评论次数</p>
+                                    <h4 class="media-heading">{$day.article_comment_nums}</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ol class="container-fuild article-list">
+                            {if $article}
+                            {foreach $article as $key=>$val}
+                            <li><a href="{'H5_URL'|config}{$val.id}"  target="_blank">{$val.title}</a></li>
+                            {/foreach}
+                            {else}
+                            暂无文章
+                            {/if}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="profile">
+                <div class="table row">
+                    <div class="media col-xs-3">
+                        <div class="media-body top-item">
+                            <p>真实阅读次数</p>
+                            <h4 class="media-heading">{$sevenDays.article_view_nums}</h4>
+                        </div>
+                    </div>
+                    <div class="col-xs-9">
+                        <div class="row">
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>分享次数</p>
+                                    <h4 class="media-heading">{$sevenDays.article_share_nums}</h4>
+                                </div>
+                            </div>
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>点赞次数</p>
+                                    <h4 class="media-heading">{$sevenDays.article_liked_nums}</h4>
+                                </div>
+                            </div>
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>收藏次数</p>
+                                    <h4 class="media-heading">{$sevenDays.article_collection_nums}</h4>
+                                </div>
+                            </div>
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>评论次数</p>
+                                    <h4 class="media-heading">{$sevenDays.article_comment_nums}</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ol class="container-fuild article-list">
+                            {if $article_7d}
+                            {foreach $article_7d as $key_7d=>$val_7d}
+                            <li><a href="{'H5_URL'|config}{$val_7d.id}"  target="_blank">{$val_7d.title}</a></li>
+                            {/foreach}
+                            {/if}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="messages">
+                <div class="table row">
+                    <div class="media col-xs-3">
+                        <div class="media-body top-item">
+                            <p>真实阅读次数</p>
+                            <h4 class="media-heading">{$oneMouth.article_view_nums}</h4>
+                        </div>
+                    </div>
+                    <div class="col-xs-9">
+                        <div class="row">
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>分享次数</p>
+                                    <h4 class="media-heading">{$oneMouth.article_share_nums}</h4>
+                                </div>
+                            </div>
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>点赞次数</p>
+                                    <h4 class="media-heading">{$oneMouth.article_liked_nums}</h4>
+                                </div>
+                            </div>
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>收藏次数</p>
+                                    <h4 class="media-heading">{$oneMouth.article_collection_nums}</h4>
+                                </div>
+                            </div>
+                            <div class="media col-xs-3">
+                                <div class="media-body">
+                                    <p>评论次数</p>
+                                    <h4 class="media-heading">{$oneMouth.article_comment_nums}</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <ol class="container-fuild article-list">
+                            {if $article_30d}
+                            {foreach $article_30d as $key_30d=>$val_30d}
+                            <li><a href="{'H5_URL'|config}{$val_30d.id}"  target="_blank">{$val_30d.title}</a></li>
+                            {/foreach}
+                            {/if}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="user-num col-xs-3">
+        <ul class="nav nav-tabs container-fluid" role="tablist">
+            <li><a href="javascript: void 0">资讯统计</a></li>
+            <li role="presentation" class="active item"><a href="#home1" aria-controls="home1" role="tab" data-toggle="tab">当天</a></li>
+            <li role="presentation"><a class="item" href="#profile1" aria-controls="profile1" role="tab" data-toggle="tab">7天</a></li>
+            <li role="presentation"><a class="item" href="#messages1" aria-controls="messages1" role="tab" data-toggle="tab">30天</a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="home1">
+                <div class="table row">
+                    <div class="media">
+                        <div class="media-body">
+                            <p>真实阅读次数</p>
+                            <h4 class="media-heading">{$day.information_view_nums}</h4>
+                        </div>
+                    </div>
+                    <div class="media">
+                        <div class="media-body">
+                            <p>分享次数</p>
+                            <h4 class="media-heading">{$day.information_share_nums}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="profile1">
+                <div class="table row">
+                    <div class="media">
+                        <div class="media-body">
+                            <p>真实阅读次数</p>
+                            <h4 class="media-heading">{$sevenDays.information_view_nums}</h4>
+                        </div>
+                    </div>
+                    <div class="media">
+                        <div class="media-body">
+                            <p>分享次数</p>
+                            <h4 class="media-heading">{$sevenDays.information_share_nums}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="messages1">
+                <div class="table row">
+                    <div class="media">
+                        <div class="media-body">
+                            <p>真实阅读次数</p>
+                            <h4 class="media-heading">{$oneMouth.information_view_nums}</h4>
+                        </div>
+                    </div>
+                    <div class="media">
+                        <div class="media-body">
+                            <p>分享次数</p>
+                            <h4 class="media-heading">{$oneMouth.information_share_nums}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="main row mt-40">
+    <div class="tj col-xs-12">
+        <ul class="nav nav-tabs container-fluid" role="tablist">
+            <li><a href="javascript: void 0">用户注册</a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content container-fluid">
+            <div role="tabpanel" class="tab-pane active" id="home">
+                <div class="table row">
+                    <div class="media pull-left">
+                        <div class="media-body top-item bd-right" style="width: 185px">
+                            <p>总注册量</p>
+                            <h4 class="media-heading">{$total_register_nums}</h4>
+                        </div>
+                    </div>
+
+                    <div class="row col-xs-10">
+                        <div class="media col-xs-4">
+                            <div class="media-body top-item">
+                                <p>当天</p>
+                                <h4 class="media-heading">{$day.user_register_nums}</h4>
+                            </div>
+                        </div>
+                        <div class="media col-xs-4">
+                            <div class="media-body top-item">
+                                <p>最近7天</p>
+                                <h4 class="media-heading">{$sevenDays.user_register_nums}</h4>
+                            </div>
+                        </div>
+                        <div class="media col-xs-4">
+                            <div class="media-body top-item">
+                                <p>最近30天</p>
+                                <h4 class="media-heading">{$oneMouth.user_register_nums}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{include file="footer.html"}

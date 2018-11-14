@@ -1,0 +1,110 @@
+{include file="header.html"}
+<style>
+    .adminstatus { cursor:pointer;} 
+</style>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">帖子屏蔽列表</h2>
+    </div>
+    <div style="clear:both"></div>
+    <br/>
+    <a href="?c=shield_post&a=sadd" class="btn btn-success">添加屏蔽</a>
+    <div style="clear:both"></div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="col-sm-1">帖子ID</th>
+                    <th class="col-sm-1">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {if $shiled_data}
+                {foreach $shiled_data as $item}
+                <tr>
+                    <td>{$item}</td>
+                    <td>
+                        <a href="javascript:;"  class="btn btn-info btn-xs" onclick='update("{$item}")'>删除</a>
+                    </td>
+                </tr>
+                {/foreach}
+                {/if}
+                </tbody>
+            </table>
+        </div>
+        <div id="judge_show">
+            <h3>当前指定IOS版本为：{$judge} <a href="javascript:;"  class="btn btn-primary btn-xs" id="show_hide">修改</a></h3>
+        </div>
+        <div id="judge_hide" style="display:none">
+            请填写需要屏蔽的帖子ID：<input type="text" name="judge" value="{$judge}" id="judge">
+            <a href="javascript:;"  class="btn btn-info btn-xs" id="submit">提交</a>
+        </div>
+    </div>
+</div>
+{include file="footer.html"}
+<script type="text/javascript">
+    function load(){
+        window.location.href = '?c=shield_post&a=index';
+    }
+    $(document).on('click','#show_hide',function(){
+        $('#judge_hide').toggle();
+    })
+    //修改版本
+    $(document).on('click','#submit',function(){
+        var judge = $("#judge").val();
+        if($.trim(judge)==''){
+            throwExc('版本不能为空或0');
+            return false;
+        }
+        $.ajax({
+            type : "post",
+            url : "?c=shield_post&a=str_upd",
+            data: "judge=" + judge,
+            async : true,
+            dataType:'json',
+            success : function(response){
+                if(response.code == 0){
+                    showSucc(response.message);
+                    setTimeout(load(),1000);
+                }else{
+                    throwExc(response.message);return false;
+                }
+            }
+        });
+    })
+
+    //删除
+    function update(id) {
+        layer.confirm('确定移除id为 '+id+' 的帖子的屏蔽吗？', {
+            btn: ['是', '否'] //可以无限个按钮
+            , btn3: function (index, layero) {
+            }
+        }, function (index, layero) {
+            ajaxSend(id,'id');
+        }, function (index,layero) {
+            layer.close(index);
+        });
+    }
+
+    function ajaxSend(id)
+    {
+        $.ajax({
+            type : "post",
+            url : "?c=shield_post&a=remove",
+            data: "id=" + id,
+            async : true,
+            dataType:'json',
+            success : function(response){
+                console.log(response);
+                if(response.code == 0){
+                    showSucc(response.message);
+                    setTimeout(load(),1000);
+                }else{
+                    throwExc(response.message);return false;
+                }
+            }
+        });
+    }
+</script>

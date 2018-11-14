@@ -1,0 +1,229 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">编辑闪屏广告</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=cms_ad">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+
+        <div class="tab-pane fade in active" id="no2">
+
+            <form class="form-horizontal"   method="post" id="form01">
+                <input type="hidden" name="id" value="{$adInfor.id}">
+                <input type="hidden" name="medias_id" value="{$adInfor.medias_id}">
+                <input type="hidden" name="page" value="{$page}">
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">广告标题：</span></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="title" value="{$adInfor.title}" class="form-control" placeholder="广告标题" >
+                    </div>
+                </div>
+
+                <div class="form-group" id="url_hide">
+                    <label  class="col-sm-2 control-label">广告跳转路径：</span></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="urllink" value="{$adInfor.url}" class="form-control" placeholder="广告跳转路径">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">开始时间：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="start_time" value="{$adInfor.start_time}" class="form-control" placeholder="开始时间" id="startTime">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">结束时间：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="end_time" value="{$adInfor.end_time}" class="form-control" placeholder="结束时间" id="endTime">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">广告图片：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="hidden" name="medias_id" value="{$adInfor.img}">
+                        <div id="file-upload-pre" ><img width="200px" height="150px" src="{$adInfor.img}"></div>
+                        <!--<input type="text" class="form-control" name="credit_logo_url" size="60" id="form-credit-logo-url" readonly> (jpg/png)&nbsp;&nbsp;--><span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success" id="form-input-upload-logo-select" value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span class="name_span">状态</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status"  value="2" {if $adInfor.is_start == 2 }checked {/if}> 禁用
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status"  value="1" {if $adInfor.is_start == 1 }checked {/if}> 启用
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label"><span class="name_span">是否需要登陆：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="is_login" id="location_page" >
+                            <option value="0" {if $adInfor.is_login == 0 }selected {/if}>否</option>
+                            <option value="1" {if $adInfor.is_login == 1 }selected {/if}>是</option>
+                        </select>
+                    </label>
+                </div>
+
+
+
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+
+                </div>
+
+
+            </form>
+
+        </div>
+        <!-- end 线下合同 -->
+
+
+    </div>
+    <hr/>
+
+
+</div>
+
+
+
+<script>
+    $("#startTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd hh:ii:ss',autoclose:true, minView: "month" });
+    $("#endTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd hh:ii:ss', autoclose:true , minView: "month"});
+    var file_url =  window.location.pathname;
+    var uploaderLogo = new plupload.Uploader({
+        runtimes : 'html5,flash,silverlight,html4',
+        browse_button : 'form-input-upload-logo-select', // you can pass an id...
+        url : file_url+'?c=upload&a=upload_url&n=' + Math.random(),
+        flash_swf_url : 'admin/js/Moxie.cdn.swf',
+        silverlight_xap_url : 'admin/js/Moxie.cdn.xap',
+
+        filters : {
+            max_file_size : '10mb',
+            mime_types : [ //只允许上传图片和zip文件
+                { title : "Image files", extensions : "jpg,png" }
+            ]
+        },
+        init: {
+            PostInit: function() {
+                $(":input[name=imgs]").val('');
+                document.getElementById('form-input-upload-logo-button').onclick = function() {
+                    uploaderLogo.start();
+                    return false;
+                };
+            },
+            FileUploaded: function (uploader,file,responseObject){
+                try{
+                    var data = JSON.parse(responseObject.response);
+                    $("#file-upload-pre").html('<img width="200px" height="150px" src="'+ data.url+ '" />')
+                    console.log(data);
+                    $(":input[name=medias_id]").val(data.url);
+                    //$(":input[name=credit_logo_url]").val(data['data']['err_msg']['filename']['url']);
+                    //$("#form-logo-container").find('a').attr('href',data['data']['err_msg']['filename']['url']);
+                }catch (e){
+                    $("#form-logo-container").html('');
+                    throwExc('上传失败请稍后重试...');
+                    return ;
+                }
+            },
+            FilesAdded: function(up, files) {
+                var file =files.pop();
+                $("#file-upload-pre").html( file.name);
+            }
+        }
+    });
+    uploaderLogo.init();
+
+</script>
+<script>
+    function checkUrl(urlString){
+        if(urlString!=""){
+            var reg=/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
+            if(!reg.test(urlString)){
+                return false;
+            }else{
+                return true;
+            }
+        }
+    }
+    function load(page){
+        window.location.href = '?c=cms_startup&a=index&p='+page;
+    }
+    $(function () {
+
+
+
+
+
+        //提交表单
+        $("#submit").click(function () {
+
+            var medias_id=$('input[name=medias_id]').val();
+            var url = $('input[name=urllink]').val();
+            var start_time = $('input[name=start_time]').val();
+            var end_time = $('input[name=end_time]').val();
+            var page = $('input[name=page]').val();
+            var title = $('input[name=title]').val();
+
+
+//            if($.trim(url)==''){
+//                throwExc('跳转路径必须填写');
+//                return false;
+//            }else{
+//
+//                    if(!checkUrl(url)){
+//                        throwExc('不是正确的网址吧，请注意检查一下');
+//                        return false;
+//                    }
+//            }
+//            if($.trim(title)==''){
+//                throwExc('标题必须填写');
+//                return false;
+//            }
+            if($.trim(start_time)==''){
+                throwExc('开始时间必须填写');
+                return false;
+            }
+            if($.trim(end_time)==''){
+                throwExc('结束时间必须填写');
+                return false;
+            }
+            var start = new Date(start_time.replace("-", "/").replace("-", "/"));
+            var end = new Date(end_time.replace("-", "/").replace("-", "/"));
+            if(end<start){
+                throwExc('结束时间必须大于开始时间');
+                return false;
+            }
+
+            if($.trim(medias_id)==''){
+                throwExc('图片必须填写');
+                return false;
+            }
+            $.ajax({
+                "url": "?c=cms_startup&a=edit",
+                'type': 'POST',
+                'data': $('#form01').serialize(),
+                'dataType': 'json',
+                'success': function (response) {
+                    if (response.code == 0) {
+                        showSucc(response.message);
+                        setTimeout(load(page),1000);
+                    }
+                    else {
+                        throwExc(response.message);
+                        return false;
+                    }
+                }
+
+            });
+        });
+    });
+</script>
+{include file="footer.html"}

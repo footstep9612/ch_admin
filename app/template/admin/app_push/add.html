@@ -1,0 +1,189 @@
+{include file="header.html"}
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <form class="form-horizontal" id="form01">
+        <div class="top-title">
+            <h2 class="sub-header">添加推送消息</h2>
+        </div>
+        <div style="clear:both"></div>
+        <br>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">类型</span><i>*</i></label>
+            <div class="col-sm-3">
+                <select name="type"  class="form-control" id="type">
+                    <option value="1">圈子详情</option>
+                    <option value="2">帖子详情</option>
+                    <option value="3">h5页面</option>
+                    <option value="4">兑换列表</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">系统</span><i>*</i></label>
+            <div class="col-sm-3">
+                <select name="system"  class="form-control" id="system">
+                    <option value="1">全部</option>
+                    <option value="2">IOS</option>
+                    <option value="3">Android</option>
+                    <option value="4">测试组</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">推送标题</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="text" name="title"  id="title" class="form-control" placeholder="推送标题">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">h5url</span></label>
+            <div class="col-sm-3">
+                <input type="text" name="url"  id="url" class="form-control" placeholder="h5url">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">h5url_title</span></label>
+            <div class="col-sm-3">
+                <input type="text" name="h5_url_title"  id="h5_url_title" class="form-control" placeholder="h5_url_title">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">推送内容</span><i>*</i></label>
+            <div class="col-sm-5">
+                <textarea rows="6"   class="form-control" placeholder="推送内容简述" name="content" id="content"></textarea>
+                <div class="textareaTip">您还可以再输入<strong id="textareaCount">300</strong>个字</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">内容id</span></label>
+            <div class="col-sm-5">
+               <input type="text" placeholder="圈子详情id 或者帖子详情id" name="id" id="a_id" class="form-control"  onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" >
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">定时发送</span></label>
+            <div class="col-sm-5">
+                <input type="text" id="datetimepicker" data-date-format="yyyy-mm-dd hh:ii" placeholder="请选择发送时间" name="sendTime" id="" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">
+                选择推送平台 ：</label>
+            <div class="col-sm-4">
+                <input type="radio" name="is_examine" value="1" >爱心推
+                <input type="radio" name="is_examine" value="2"  checked>极光推送
+            </div>
+        </div>
+
+        <div class="form-group" align="center">
+            <div class="col-sm-7">
+                <button type="button" class="btn btn-primary" >提交</button>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+<script>
+    $(function () {
+
+        $('#datetimepicker').datetimepicker({
+            todayHighlight: 1,//今天高亮
+            autoclose: 1,//选择后自动关闭
+            minView:0
+        });
+
+
+
+
+
+        $('textarea').keyup(function() {
+            var maxLength = 300;
+            var len = $('textarea').val().length;
+            $('#textareaCount').html(maxLength - len);
+            if(parseInt($('#textareaCount').text()) < 0) {
+                $('#textareaCount').html('0');
+                var res = $(this).val().substring(0, 300);
+                $(this).val(res);
+            }
+        });
+
+        //提交表单
+        $(":button").click(function () {
+            var type = $("#type").val();
+            var system = $("#system").val();
+            var title = $("#title").val();
+            var content = $('#content').val();
+            var a_id = $('#a_id').val();
+            var url = $('#url').val();
+            var h5_url_title = $('#h5_url_title').val();
+            var is_examine=$('input:radio[name="is_examine"]:checked').val();
+
+            if($.trim(type) == ''){
+                throwExc('类型必须选择');
+                return false;
+            }
+            if($.trim(title) == ''){
+                throwExc('标题必须填写');
+                return false;
+            }
+            if($.trim(content) == ''){
+                throwExc('推送描述必须填写');
+                return false;     
+            }
+
+
+            if($.trim(type) == 3){
+                if($.trim(url) == ''){
+                    throwExc('h5url 必须填写');
+                    return false;
+                }
+                if($.trim(h5_url_title) == ''){
+                    throwExc('h5url_title 必须填写');
+                    return false;
+                }
+
+                if($.trim(h5_url_title).length >5    ){
+                    throwExc('h5url_title长度 必须4个字以内');
+                    return false;
+                }
+            }else{
+                if( a_id == 0 ){
+                    throwExc('请填写正确id');
+                    return false;
+                }
+            }
+            var url_a='add_jpush';
+            if(is_examine == 1){
+                url_a = 'add';
+            }
+
+
+            $.ajax({
+                "url": "?c=app_push&a="+url_a,
+                'type': 'POST',
+                'data': $('#form01').serialize(),
+                'dataType': 'json',
+                'success': function (data) {
+                    if(data.code == 1){
+                        layer.alert(data.message);
+                    }else{
+                        layer.alert(data.message);
+                        window.location.href = '?c=app_push&a=index';
+                    }
+
+
+                }
+            });
+        });
+
+    });
+
+</script>
+{include file="footer.html"}

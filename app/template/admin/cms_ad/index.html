@@ -1,0 +1,189 @@
+{include file="header.html"}
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+          <h2 class="sub-header">广告列表&nbsp;&nbsp;<small>cms_ad</small></h2>
+
+           <a href="?c=cms_ad&a=add" class="btn btn-success">添加</a>
+
+          <div id="myTabContent" class="tab-content" style="margin-top:10px">
+
+          <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+          					<th colspan="1" rowspan="1">编号</th>
+          					<th class="col-sm-1">标题</th>
+                            <th >图片</th>
+          					<th >广告位位置</th>
+                            <th class="col-sm-1">跳转地址</th>
+                            <th class="col-sm-1">描述</th>
+                            <th class="col-sm-1">排序</th>
+                            <th >点击数</th>
+                            <th >是否启用</th>
+                            <th >是否需要登录</th>
+                            <th class="col-sm-1">开始时间</th>
+                            <th class="col-sm-1">结束时间</th>
+                            <th class="col-sm-1">操作</th>
+
+                </tr>
+                </tr>
+              </thead>
+              <tbody>
+              {if $result}
+                {foreach $result as $key=>$item}
+				<tr  id="{$item.id}">
+                    <td>{$item.id}</td>
+					<td>{$item.title}</td>
+                    <th ><img src="{if isset($item.img)}{$item.img}{/if}" width="120px" height="100px"></th>
+					<td>{if $item.type==1}banner{elseif $item.type==2}列表{else}个人中心{/if}</td>
+					<td>{$item.url}</td>
+                    <td>{$item.ad_desc}</td>
+					<td>
+                        <a href="javascript:void(0)" onclick="moveUp(this)"><span class="glyphicon glyphicon-arrow-up"></span></a>
+                        &nbsp;&nbsp;
+                        <a href="javascript:void(0)" onclick="moveDown(this)"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                    </td>
+                    <td>{$item.click_nums}</td>
+                    <td>{if $item.status ==1} 已启用{else} 已禁用{/if}</td>
+                    <td>{if $item.is_login ==1} 是{else}否{/if}</td>
+                    <td>{$item.start_time}</td>
+                    <td>{$item.end_time}</td>
+                  <td>
+                    <a href="?c=cms_ad&a=edit&id={$item.id}&p={$page}" class="btn btn-primary btn-xs szpq">编辑</a>
+                       {if $item.status ==1 }
+                          <a href="javascript:void(0);"  class="btn btn-danger btn-xs start" pid="{$item.id}">禁用</a>
+                          {else}
+                          <a href="javascript:void(0);"  class="btn btn-success btn-xs start" pid="{$item.id}">启用</a>
+                          {/if}
+                       <a href="javascript:void(0);"  class="btn btn-danger btn-xs status" pid="{$item.id}">删除</a>
+
+                  </td>
+				</tr>
+              {/foreach}
+              {/if}
+
+              </tbody>
+            </table>
+              <div>{if isset($pageNum)}{$pageNum}{/if}</div>
+          </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
+      $(function(){
+          $(".status").click(function(){
+              var id=$(this).attr('pid');
+              if(!id){ throwExc('没有参数');return false };
+              if(!confirm('确认删除吗')){
+                  return false;
+              }
+              $.ajax({
+                  type : "post",
+                  url : "?c=cms_ad&a=remove",
+                  data: "id=" + id,
+                  async : false,
+                  dataType:'json',
+                  success : function(response){
+                      console.log(response)
+                      if(response.code == 0){
+                          window.location.href=window.location.href;
+                      }else{
+                          throwExc(response.message);return false;
+                      }
+                  }
+              });
+
+          })
+      })
+
+
+      function moveUp(_a){
+          var _row = _a.parentNode.parentNode;
+          //如果不是第一行，则与上一行交换顺序
+          var _node = _row.previousSibling;
+          while(_node && _node.nodeType != 1){
+              _node = _node.previousSibling;
+          }
+
+
+
+          if(_node){
+              swapNode(_row,_node);
+          }
+      }
+      function moveDown(_a){
+          var _row = _a.parentNode.parentNode;
+          //如果不是最后一行，则与下一行交换顺序
+          var _node = _row.nextSibling;
+          while(_node && _node.nodeType != 1){
+              _node = _node.nextSibling;
+          }
+          if(_node){
+              swapNode(_row,_node);
+          }
+      }
+      function swapNode(node1,node2){
+          //获取父结点
+          var _parent = node1.parentNode;
+          //获取两个结点的相对位置
+          var _t1 = node1.nextSibling;
+          var _t2 = node2.nextSibling;
+          if(!updateSort(node1,node2)){
+              return false;
+          }
+          //将node2插入到原来node1的位置
+          if(_t1)_parent.insertBefore(node2,_t1);
+          else _parent.appendChild(node2);
+          //将node1插入到原来node2的位置
+          if(_t2)_parent.insertBefore(node1,_t2);
+          else _parent.appendChild(node1);
+      }
+
+
+
+      function updateSort(_t1,_t2)
+      {
+          var return_res = false;
+          var params = {};
+          params['id'] = $(_t1).attr('id')+","+$(_t2).attr('id');
+          params['sort'] = ($(_t2).index()+1)+","+($(_t1).index()+1);
+          $.ajax({
+              type : "post",
+              url : "?c=cms_ad&a=update_sort",
+              data:  params,
+              async : false,
+              dataType:'json',
+
+              success : function(response){
+                  console.log(response)
+                  if(response.code == 1){
+                      throwExc(response.message);
+                  }else{
+                      return_res = true;
+                      showSucc(response.message);
+                      
+                  }
+              }
+          });
+          return return_res;
+      }
+
+      $(function(){
+          $(".start").click(function(){
+              var id=$(this).attr('pid');
+              var msg=$(this).html();
+              if(msg=='禁用'){
+                  msg='禁用';
+              }else{
+                  msg='启动';
+              }
+              if(confirm('你确定要'+msg+"吗？")){
+                  window.location.href="?c=cms_ad&a=status&id="+id;
+              }
+          });
+      })
+
+  </script>

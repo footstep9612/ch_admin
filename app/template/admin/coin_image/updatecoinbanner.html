@@ -1,0 +1,231 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">编辑币种banner</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=coin_image&a=coin_image_list">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <div class="tab-pane fade in active" id="no2">
+
+            <form class="form-horizontal"   method="post" id="form01">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">兑换币种：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <select name="coin_id" id="coin_id">
+                            {if $coin_msg}
+                            {foreach $coin_msg as $key=>$item}
+                            <option value="{$item.coin_id}">{$item.coin_symbol}({$item.coin_name})</option>
+                            {/foreach}
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">设置跳转链接：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <label class="radio-inline">
+                            <input type="radio" name="redirect_status"  id="redirect_no" value="0" {if $banner_img_msg.set_flag == 0 }checked {/if}> 不设置
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="redirect_status"  id="redirect_yes" value="1" {if $banner_img_msg.set_flag == 1 }checked {/if}> 设置
+
+                            <input type="hidden" name="hidden_flag" value="{$banner_img_msg.set_flag}">
+
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" id="redirect_url">
+                    <label class="col-sm-2 control-label">跳转链接：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="url" value="{$banner_img_msg.redirect_url}" class="form-control" placeholder="跳转链接">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">币种banner图：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="hidden" name="medias_id" value="{$banner_img_msg.banner_img_url}">
+                        <div id="file-upload-pre" ><img src="{$banner_img_msg.banner_img_url}" width="200px" height="150px"></div>
+                        <br>
+                        <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success" id="form-input-upload-logo-select" value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span class="name_span">状态</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status" id="status_no" value="0" {if $banner_img_msg.status == 0 }checked {/if}> 禁用
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status" id="status_yes" value="1" {if $banner_img_msg.status == 1 }checked {/if}> 启用
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label"><span class="name_span">是否需要登陆：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="is_login" id="location_page" >
+                            <option value="0" {if $banner_img_msg.is_login == 0 }selected {/if}>否</option>
+                            <option value="1" {if $banner_img_msg.is_login == 1 }selected {/if}>是</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <input type="hidden" name="up_coin_id" value="{$banner_img_msg.coin_id}">
+                        <input type="hidden" name="id" value="{$banner_img_msg.id}">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+    <hr/>
+
+
+</div>
+
+
+
+<script>
+    window.onload = function(){
+//        $("#redirect_url").hide();
+        var coin_id =  $('input[name=up_coin_id]').val();
+        var hidden_flag =  $('input[name=hidden_flag]').val();
+        if(hidden_flag==1){
+            $("#redirect_url").show();
+        }else{
+            $("#redirect_url").hide();
+        }
+//        alert(hidden_flag)
+        $("#coin_id").find("option[value = '"+coin_id+"']").attr("selected","selected");
+    };
+    var file_url =  window.location.pathname;
+    var uploaderLogo = new plupload.Uploader({
+        runtimes : 'html5,flash,silverlight,html4',
+        browse_button : 'form-input-upload-logo-select', // you can pass an id...
+        url : file_url+'?c=upload&a=upload_url&n=' + Math.random(),
+        flash_swf_url : 'admin/js/Moxie.cdn.swf',
+        silverlight_xap_url : 'admin/js/Moxie.cdn.xap',
+
+        filters : {
+            max_file_size : '10mb',
+            mime_types : [ //只允许上传图片和zip文件
+                { title : "Image files", extensions : "jpg,png" }
+            ]
+        },
+        init: {
+            PostInit: function() {
+                document.getElementById('form-input-upload-logo-button').onclick = function() {
+                    uploaderLogo.start();
+                    return false;
+                };
+            },
+            FileUploaded: function (uploader,file,responseObject){
+                try{
+                    var data = JSON.parse(responseObject.response);
+                    $("#file-upload-pre").html('<img width="200px" height="150px" src="'+ data.url+ '" />')
+                    console.log(data);
+                    $(":input[name=medias_id]").val(data.url);
+                    //$(":input[name=credit_logo_url]").val(data['data']['err_msg']['filename']['url']);
+                    //$("#form-logo-container").find('a').attr('href',data['data']['err_msg']['filename']['url']);
+                }catch (e){
+                    $("#form-logo-container").html('');
+                    throwExc('上传失败请稍后重试...');
+                    return ;
+                }
+            },
+            FilesAdded: function(up, files) {
+                var file =files.pop();
+                $("#file-upload-pre").html( file.name);
+            }
+        }
+    });
+    uploaderLogo.init();
+
+</script>
+<script>
+    function load(){
+        window.location.href = '?c=coin_image&a=coin_image_list';
+    }
+    function checkUrl(urlString){
+        if(urlString!=""){
+            var reg=/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
+            if(!reg.test(urlString)){
+                return false;
+            }else{
+                return true;
+            }
+        }
+    }
+    $(function () {
+
+        $('input[name=redirect_status]').click(function () {
+            var redirect_status = $(this).val();
+
+            if(redirect_status == 0 )
+            {
+                $("#redirect_url").hide();
+            }
+
+            if(redirect_status == 1)
+            {
+                $("#redirect_url").show();
+            }
+        });
+
+        //提交表单
+        $("#submit").click(function () {
+
+            var url = $('input[name=url]').val();
+            var medias_id = $('input[name=medias_id]').val();
+            var redirect_status = $("input[name=redirect_status]:checked").val();
+
+            if(redirect_status == 1)
+            {
+                if($.trim(url)==''){
+                    throwExc('跳转路径必须填写');
+                    return false;
+                }else{
+
+                    if(!checkUrl(url)){
+                        throwExc('不是正确的网址吧，请注意检查一下');
+                        return false;
+                    }
+                }
+            }
+
+            if($.trim(medias_id)==''){
+                throwExc('图片必须填写');
+                return false;
+            }
+            $.ajax({
+                "url": "?c=coin_image&a=update_coin_banner",
+                'type': 'POST',
+                'data': $('#form01').serialize(),
+                'dataType': 'json',
+                'success': function (data) {
+                    console.log(data)
+                    if (data.error != 0) {
+                        layer.alert(data.message);
+                        setTimeout("load()",1000)
+                    }
+                    else {
+                        layer.alert(data.message);
+                        return false;
+                    }
+                }
+
+            });
+        });
+
+    });
+</script>
+{include file="footer.html"}

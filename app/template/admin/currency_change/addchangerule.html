@@ -1,0 +1,208 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">添加兑换活动</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=currency_change&a=changeRuleList">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+
+        <!-- start 线下合同 -->
+        <div class="tab-pane fade in active" id="no2">
+
+            <form class="form-horizontal"   method="post" id="form01">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">兑换币种：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <select name="coin_id" id="coin_id">
+                            {if $currencyname}
+                            {foreach $currencyname as $key=>$item}
+                            <option value="{$item.coin_id}">{$item.currency_name}({$item.coin_name})</option>
+                            {/foreach}
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">兑换比例：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="change_proportion" value="" class="form-control" placeholder="兑换上限 BNF/ICO">
+                    </div>
+                    BNF/份*
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">兑换上限：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="change_toplimit" value="" class="form-control" placeholder="兑换上限">
+                    </div>
+                    币数量，兑换上限是在设置的时间区间
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">兑换下限：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="change_lowerlimit" value="" class="form-control" placeholder="兑换下限">
+                    </div>
+                    兑换币数量下限和每份数量*
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">兑换总量：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="change_sum_num" value="" class="form-control" placeholder="兑换总量">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">规则文案：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <textarea name="rule_desc" id="" cols="65" rows="7" placeholder="规则文案 按英文逗号分隔 1. test,2.test,3.test" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">弹窗提醒（选填，不填则不弹窗）：</span></label>
+                    <div class="col-sm-6">
+                        <textarea name="popup" id="" cols="65" rows="7" placeholder="可选，不填则不弹窗" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">开始时间：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="start_time" value="" class="form-control" placeholder="开始时间" id="startTime">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">结束时间：</span><i>*</i></label>
+                    <div class="col-sm-6" id="datetimepicker">
+                        <input type="text" name="end_time" value="" class="form-control" placeholder="结束时间" id="endTime">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span class="name_span">状态</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status" id="status_no" value="0" checked> 禁用
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status" id="status_yes" value="1"> 启用
+                    </label>
+                </div>
+
+
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+
+                </div>
+
+
+            </form>
+
+        </div>
+        <!-- end 线下合同 -->
+
+
+    </div>
+    <hr/>
+
+
+</div>
+<script>
+    $("#startTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd hh:ii:ss',autoclose:true, minView: "month" });
+    $("#endTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd hh:ii:ss', autoclose:true , minView: "month"});
+</script>
+<script>
+    //提交表单
+    $("#submit").click(function () {
+        var change_proportion=$('input[name=change_proportion]').val();
+        var change_toplimit=$('input[name=change_toplimit]').val();
+        var change_lowerlimit=$('input[name=change_lowerlimit]').val();
+        var rule_desc=$('textarea[name=rule_desc]').val();
+        var change_sum_num=$('input[name=change_sum_num]').val();
+        var start_time = $('input[name=start_time]').val();
+        var end_time = $('input[name=end_time]').val();
+
+
+        if($.trim(change_proportion)==''  ){
+            throwExc('兑换比例必填');
+            return false;
+        }
+
+        if($.trim(change_toplimit)==''  ){
+            throwExc('兑换上限必填');
+            return false;
+        }
+        if($.trim(change_sum_num)==''  ){
+            throwExc('兑换总量必填');
+            return false;
+        }
+        if(isNumber($.trim(change_toplimit)) == false || $.trim(change_toplimit) <=0)
+        {
+            throwExc('兑换上限不能为负数');
+            return false;
+        }
+        if($.trim(change_lowerlimit)==''  ){
+            throwExc('兑换下限必填');
+            return false;
+        }
+        if(isNumber($.trim(change_lowerlimit)) == false || $.trim(change_lowerlimit) <=0)
+        {
+            throwExc('兑换下限不能为负数');
+            return false;
+        }
+        if($.trim(rule_desc)==''  ){
+            throwExc('规则文案必填');
+            return false;
+        }
+        if(rule_desc.indexOf(",") < 0)
+        {
+            throwExc('必须以英文逗号分隔 例:1.test,2.test,3.test');
+            return false;
+        }
+        if($.trim(start_time)==''){
+            throwExc('开始时间必须填写');
+            return false;
+        }
+        if($.trim(end_time)==''){
+            throwExc('结束时间必须填写');
+            return false;
+        }
+        var start = new Date(start_time.replace("-", "/").replace("-", "/"));
+        var end = new Date(end_time.replace("-", "/").replace("-", "/"));
+        if(end<start){
+            throwExc('结束时间必须大于开始时间');
+            return false;
+        }
+
+        $.ajax({
+            "url": "?c=currency_change&a=addChangeRule",
+            'type': 'POST',
+            'data': $('#form01').serialize(),
+            'dataType': 'json',
+            'success': function (data) {
+                console.log(data)
+                if (data.error != 0) {
+                    layer.alert(data.message);
+                    setTimeout("load()",1000)
+                }
+                else {
+                    layer.alert(data.message);
+                    return false;
+                }
+            }
+
+        });
+
+
+    });
+
+    //判断是否为数字
+    function isNumber(value) {         //验证是否为数字
+        var patrn = /^(-)?\d+(\.\d+)?$/;
+        if (patrn.exec(value) == null || value == "") {
+            return false
+        } else {
+            return true
+        }
+    }
+
+</script>
+{include file="footer.html"}

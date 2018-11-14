@@ -1,0 +1,248 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">合作方帖子编辑</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="javascript:history.back(-1)">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+
+        <!-- start 线下合同 -->
+        <div class="tab-pane fade in active" id="no2">
+
+            <form class="form-horizontal"   method="post" id="form01">
+                <input type="hidden" name="id" value="{$post_detail.id}">
+                <input type="hidden" name="u_id" value="{$post_detail.u_id}">
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">请选择用户:</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <div class="input-group">
+                               {$post_detail.username}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">请填写币种编号:</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <select name="c_id" id="c_id">
+                            {if $allCoin}
+                            {foreach $allCoin as $key=>$item}
+                            <option value="{$item.id}" {if $post_detail.c_id == $item.id } selected {/if}>{$item.coin_symbol}({$item.coin_name})</option>
+                            {/foreach}
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">帖子标题：</label>
+                    <div class="col-sm-6">
+                        <textarea rows="5" cols="60" name="title"  id="title" >{$post_detail.title}</textarea>
+                        <div class="textareaTip">您还可以再输入<strong id="textareaCount">30</strong>个字</div>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">帖子内容：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <textarea rows="10" cols="60" name="content"  id="content" >{$post_detail.content}</textarea>
+                    </div>
+                </div>
+
+
+                <div id="uploadFile" class="form-group">
+                    <label  class="col-sm-2 control-label">图片：</label>
+                    <div class="col-sm-2">
+                        <input type="hidden" id="file-0" name="medias_id[]" {if !empty($post_detail.img_urls[0])} value="{$post_detail.img_urls[0]}" {else} value="" {/if}>
+                        <div id="file-upload-pre" ><img width="200px" height="150px" {if !empty($post_detail.img_urls[0])} src="{$post_detail.img_urls[0]}" {/if}></div>
+                      <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn" data-index="0"  value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                    <div class="col-sm-2">
+                        <input type="hidden" id="file-1" name="medias_id[]" {if !empty($post_detail.img_urls[1])} value="{$post_detail.img_urls[1]}" {else} value="" {/if}>
+                        <div id="file-upload-pre" ><img width="200px" height="150px" {if !empty($post_detail.img_urls[1])} src="{$post_detail.img_urls[1]}"  {/if}></div>
+                        <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn" data-index="1"  value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                    <div class="col-sm-2">
+                        <input type="hidden" id="file-2" name="medias_id[]" {if !empty($post_detail.img_urls[2])} value="{$post_detail.img_urls[2]}" {else} value="" {/if}>
+                        <div id="file-upload-pre" ><img width="200px" height="150px" {if !empty($post_detail.img_urls[2])} src="{$post_detail.img_urls[2]}" {/if}></div>
+                        <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn" data-index="2"  value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                    <div class="col-sm-2">
+                        <input type="hidden" id="file-3" name="medias_id[]" {if !empty($post_detail.img_urls[3])} value="{$post_detail.img_urls[3]}" {else} value="" {/if}>
+                        <div id="file-upload-pre" ><img width="200px" height="150px" {if !empty($post_detail.img_urls[3])} src="{$post_detail.img_urls[3]}"{/if}></div>
+                        <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn" data-index="3"  value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-6">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+
+                </div>
+
+
+            </form>
+
+        </div>
+        <!-- end 线下合同 -->
+        <input type="hidden" class="btn btn-success" id="mutile-btn" value="选择图片" />
+
+    </div>
+    <hr/>
+
+
+</div>
+
+
+
+<script>
+    var index = 0;
+    var files = [];
+    var uploadBtn = document.getElementById('uploadFile');
+    uploadBtn.addEventListener('click', function (e) {
+        var className = e.target.className;
+        if (className.indexOf('upload-btn') !== -1) {
+            index = +e.target.dataset.index;
+            document.getElementById('mutile-btn').click();
+        }
+    })
+
+    var file_url =  window.location.pathname;
+    var uploaderLogo = new plupload.Uploader({
+        runtimes : 'html5,flash,silverlight,html4',
+        browse_button : 'mutile-btn', // you can pass an id...
+        url : file_url+'?c=upload&a=upload_url&n=' + Math.random(),
+        flash_swf_url : 'admin/js/Moxie.cdn.swf',
+        silverlight_xap_url : 'admin/js/Moxie.cdn.xap',
+
+        filters : {
+            max_file_size : '10mb',
+            mime_types : [ //只允许上传图片和zip文件
+                { title : "Image files", extensions : "jpg,png" }
+            ]
+        },
+        init: {
+            PostInit: function() {
+                uploadBtn.addEventListener('click', function (e) {
+                    var className = e.target.className;
+                    if (className.indexOf('confirm-btn') !== -1) {
+                        uploaderLogo.start();
+                        return false;;
+                    }
+                })
+            },
+            FileUploaded: function (uploader,file,responseObject){
+                try{
+                    var fileid = '#file-'+index;
+                    var data = JSON.parse(responseObject.response);
+                    $(fileid+"+#file-upload-pre").html('<img width="200px" height="150px" src="'+ data.url+ '" />')
+                    $(fileid).val(data.url);
+                }catch (e){
+                    $("#form-logo-container").html('');
+                    throwExc('上传失败请稍后重试...');
+                    return ;
+                }
+            },
+            FilesAdded: function(up, files) {
+                var file =files.pop();
+                var fileid = '#file-'+index;
+                $(fileid+"+#file-upload-pre").html( file.name);
+            }
+        }
+    });
+    uploaderLogo.init();
+</script>
+<script>
+    function load(){
+        window.location.href = '?c=partners_posts&a=partnersPostslist';
+    }
+    function checkUrl(urlString){
+        if(urlString!=""){
+            var reg=/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
+            if(!reg.test(urlString)){
+                return false;
+            }else{
+                return true;
+            }
+        }
+    }
+
+
+    function my_array_name(m){
+        var valArr = [];
+        $("input[name='"+m+"[]']").each(function(i){
+            if($(this).val() != ""){
+                valArr[i] = $(this).val();
+            }
+        });
+        var priv = valArr.join(',');
+        return priv;
+    }
+
+    $('#title').keyup(function() {
+        var maxLength = 30;
+        var len = $('#title').val().length;
+        $('#textareaCount').html(maxLength - len);
+        if(parseInt($('#textareaCount').text()) < 0) {
+            $('#textareaCount').html('0');
+            var res = $(this).val().substring(0, 30);
+            $(this).val(res);
+        }
+    });
+
+
+    $(function () {
+
+        //提交表单
+        $("#submit").click(function () {
+        var c_id = $("#c_id").val();
+        var title = $('#title').val();
+        var content=$('#content').val();
+
+        var medias_id = my_array_name('medias_id');
+        if($.trim(c_id)==''){
+            throwExc('币种必须填写');
+            return false;
+        }
+        if(isNaN(c_id)){
+            throwExc('币种必须数字编号');
+            return false;
+        }
+
+        if($.trim(content)==''){
+            throwExc('帖子内容必须填写');
+            return false;
+        }
+
+
+    /*   if($.trim(medias_id)==''){
+            throwExc('图片必须填写');
+            return false;
+        }*/
+         var data =    $('#form01').serialize();
+             data = data+'&medias_id='+medias_id;
+
+            $.ajax({
+                "url": "?c=partners_posts&a=partnersPostsEdit",
+                'type': 'POST',
+                'data': data,
+                'dataType': 'json',
+                'success': function (data) {
+                    console.log(data)
+                    if (data.error != 0) {
+                        layer.alert(data.message);
+                        setTimeout("load()",1000)
+                    }
+                    else {
+                        layer.alert(data.message);
+                        return false;
+                    }
+                }
+
+            });
+        });
+
+    });
+</script>
+{include file="footer.html"}

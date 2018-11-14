@@ -1,0 +1,75 @@
+{include file="header.html"}
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <form class="form-horizontal" id="form01">
+        <div class="top-title">
+            <h2 class="sub-header">编辑每日任务</h2>
+            <div class="top-tools">
+              <a class="btn btn-default" href="?c=everydaytask&a=index">返回</a>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+        <br>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">事件名称</span><i>*</i></label>
+            <div class="col-sm-3">
+                <select name="weight" id="option" class="form-control">
+                    <!---->
+                    {foreach $even as $key=>$item}
+                    <option value="{$item.id}" event_code="{$item.event_code}" {if $item.event_code eq $event_data} selected {/if}>{$item.name}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">是否展示</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="radio" name="is_show" value="1" {if $status eq 1} checked {/if}>展示
+                <input type="radio" name="is_show" value="0" {if $status eq 0} checked {/if}>不展示
+                <input type="hidden" id="hidden" value="{$event_id}">
+            </div>
+        </div>
+
+        <div class="form-group" align="center">
+            <div class="col-sm-7">
+                <button type="button" class="btn btn-primary" >修改</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+<script>
+    $(function () {
+        //提交表单
+        $(":button").click(function () {
+            var name = $("#option option:selected").text();
+            var event_code = $("#option option:selected").attr('event_code');
+            var status = $('input[name="is_show"]:checked').val();
+            var event_id = $("#hidden").val();
+            if($.trim(name) == ''){
+                throwExc('事件名称必填');
+                return false;
+            }
+            $.ajax({
+                "url": "?c=everydaytask&a=upEvent",
+                'type': 'POST',
+                'data': "name="+name+"&event_code="+event_code+"&status="+status+"&event_id="+event_id,
+                'async':false,
+                'dataType': 'json',
+                'success': function (data) {
+                    if(data.code == 1){
+                        layer.alert(data.msg);
+                    }else{
+                        layer.alert(data.msg);
+                        window.location.href = '?c=everydaytask&a=index';
+                    }
+                }
+            });
+        });
+
+    });
+
+</script>
+{include file="footer.html"}

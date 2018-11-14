@@ -1,0 +1,251 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">添加圈子</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=cms_ad">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <div class="tab-pane fade in active" id="no2">
+
+            <form class="form-horizontal"   method="post" id="form01">
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">圈子分类：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <!--<input type="radio" name="task_list" id="task_list" value="1"> task_list-->
+                        <select name="jump_list" id="jump_list" >
+                            <option value ="task_list">货币圈子</option>
+                            <option value ="official">官方圈子</option>
+
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group" id="official_name" style="display: none">
+                    <label  class="col-sm-2 control-label">官方圈名：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="official_name" value="" class="form-control" placeholder="">
+                    </div>
+                </div>
+                <div class="form-group" id="u_name">
+                    <label  class="col-sm-2 control-label">币简称：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="u_name" value="" class="form-control" placeholder="如：BTM">
+                    </div>
+                </div>
+                <div class="form-group" id="all_name">
+                    <label  class="col-sm-2 control-label">币全称：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="all_name" value="" class="form-control" placeholder="如：Bytom">
+                    </div>
+                </div>
+                <div class="form-group" id="is_newcoin">
+                    <label  class="col-sm-2 control-label">币来源：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="is_newcoin" id="is_newcoin" >
+                            <option value ="0" >币牛牛</option>
+                            <option value ="1" selected>其他</option>
+                        </select>
+                        <font color=red>需要抓取币牛牛数据时选择币牛牛来源</font>
+                    </label>
+                </div>
+                <div class="form-group" id="is_grade">
+                    <label  class="col-sm-2 control-label">是否评级圈：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="is_grade" id="is_grade" >
+                            <option value ="0" selected>否</option>
+                            <option value ="1">是</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group" id="slogan">
+                    <label  class="col-sm-2 control-label">slogan：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="slogan" value="" class="form-control" placeholder="">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">币图标：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="hidden" name="medias_id" value="">
+                        <div id="file-upload-pre" ><img width="200px" height="150px"></div>
+                        <!--<input type="text" class="form-control" name="credit_logo_url" size="60" id="form-credit-logo-url" readonly> (jpg/png)&nbsp;&nbsp;--><span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success" id="form-input-upload-logo-select" value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+    <hr/>
+
+
+</div>
+
+
+
+<script>
+    $("#startTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd',autoclose:true, minView: "month" });
+    $("#endTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd ', autoclose:true , minView: "month"});
+    var file_url =  window.location.pathname;
+    var uploaderLogo = new plupload.Uploader({
+        runtimes : 'html5,flash,silverlight,html4',
+        browse_button : 'form-input-upload-logo-select', // you can pass an id...
+        url : file_url+'?c=upload&a=upload_url&n=' + Math.random(),
+        flash_swf_url : 'admin/js/Moxie.cdn.swf',
+        silverlight_xap_url : 'admin/js/Moxie.cdn.xap',
+
+        filters : {
+            max_file_size : '10mb',
+            mime_types : [ //只允许上传图片和zip文件
+                { title : "Image files", extensions : "jpg,png" }
+            ]
+        },
+        init: {
+            PostInit: function() {
+                $(":input[name=medias_id]").val('');
+                document.getElementById('form-input-upload-logo-button').onclick = function() {
+                    uploaderLogo.start();
+                    return false;
+                };
+            },
+            FileUploaded: function (uploader,file,responseObject){
+                try{
+                    var data = JSON.parse(responseObject.response);
+                    $("#file-upload-pre").html('<img width="200px" height="150px" src="'+ data.url+ '" />')
+                    console.log(data);
+                    $(":input[name=medias_id]").val(data.url);
+                    //$(":input[name=credit_logo_url]").val(data['data']['err_msg']['filename']['url']);
+                    //$("#form-logo-container").find('a').attr('href',data['data']['err_msg']['filename']['url']);
+                }catch (e){
+                    $("#form-logo-container").html('');
+                    throwExc('上传失败请稍后重试...');
+                    return ;
+                }
+            },
+            FilesAdded: function(up, files) {
+                var file =files.pop();
+                $("#file-upload-pre").html( file.name);
+            }
+        }
+    });
+    uploaderLogo.init();
+
+</script>
+<script>
+    function load(){
+        window.location.href = '?c=posts&a=addcircle';
+    }
+    function checkUrl(urlString){
+        if(urlString!=""){
+            var reg=/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
+            if(!reg.test(urlString)){
+                return false;
+            }else{
+                return true;
+            }
+        }
+    }
+    $(function () {
+
+        //跳转任务列表显示隐藏
+        $("#jump_list").click(function () {
+            var jump_list = $(this).val();
+
+            if(jump_list == 'official')
+            {
+                $("#u_name").hide();
+                $("#all_name").hide();
+
+            }else{
+                $("#u_name").show();
+                $("#all_name").show();
+            }
+
+            if(jump_list == 'task_list')
+            {
+                $("#official_name").hide();
+
+            }else{
+                $("#official_name").show();
+            }
+
+
+
+        });
+
+        //提交表单
+        $("#submit").click(function () {
+
+        var jump_list = $("#jump_list").val();
+
+           if(jump_list == 'task_list'){
+               var u_name = $('input[name=u_name]').val();//币简称
+               var all_name = $('input[name=all_name]').val();//币全称
+
+               if($.trim(u_name)==''){
+                   throwExc('币简称必须填写');
+                   return false;
+               }
+               if($.trim(all_name)==''){
+                   throwExc('币全称必须填写');
+                   return false;
+               }
+
+           }else if(jump_list == 'official'){
+
+               var official_name = $('input[name=official_name]').val();//官方圈子名
+               if($.trim(official_name)==''){
+                   throwExc('官方圈子名必须填写');
+                   return false;
+               }
+           }
+
+            var slogan = $('input[name=slogan]').val();//slogan
+            var medias_id=$('input[name=medias_id]').val();//图片
+            if($.trim(slogan)==''){
+                throwExc('slogan必须填写');
+                return false;
+            }
+
+            if($.trim(medias_id)==''){
+                throwExc('图片必须填写');
+                return false;
+            }
+
+
+            $.ajax({
+                "url": "?c=posts&a=addcircle",
+                'type': 'POST',
+                'data': $('#form01').serialize(),
+                'dataType': 'json',
+                'success': function (data) {
+                    console.log(data)
+                    if (data.error != 0) {
+                        layer.alert(data.message);
+                        setTimeout("load()",1000)
+                    }
+                    else {
+                        layer.alert(data.message);
+                        return false;
+                    }
+                }
+
+            });
+
+        });
+
+    });
+</script>
+{include file="footer.html"}

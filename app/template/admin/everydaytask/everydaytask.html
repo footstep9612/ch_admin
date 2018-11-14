@@ -1,0 +1,76 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">每日任务列表&nbsp;&nbsp;</h2>
+
+    <a href="?c=everydaytask&a=addEvent" class="btn btn-success">添加</a>
+
+
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th colspan="1" rowspan="1">ID</th>
+                    <th colspan="1" rowspan="1">任务ID</th>
+                    <th colspan="1" rowspan="1">任务名称</th>
+                    <th colspan="1" rowspan="1">任务标识</th>
+                    <th colspan="1" rowspan="1">是否展示</th>
+                    <th >操作</th>
+                </tr>
+                </tr>
+                </thead>
+                <tbody>
+                {if $list}
+                {foreach $list as $key=>$item}
+                <tr>
+                <td>{$item.id}</td>
+                <td>{$item.event_id}</td>
+                <td>{$item.event_name}</td>
+                <td>{$item.event_code}</td>
+                <td>{if $item.status eq 1}<font color=green>展示</font>{else}<font color=red>不展示</font>{/if}</td>
+                <td>
+                    <a href="?c=everydaytask&a=upEvent&event_id={$item.event_id}"  class="btn btn-primary btn-xs szpq">编辑</a>
+                    <a class="btn btn-primary btn-xs szpq" id='del' event_id="{$item.id}" event_name="{$item.event_name}">删除</a>
+                </td>
+                </tr>
+                {/foreach}
+                {/if}
+                </tbody>
+            </table>
+            <!--<div>{if isset($pageNum)}{$pageNum}{/if}</div>-->
+        </div>
+
+        <!-- end 已上线 -->
+    </div>
+
+</div>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+    //删除
+    $(document).on('click','#del',function(){
+        var event_name = $(this).attr('event_name');
+        var id = $(this).attr('event_id');
+        if(!confirm("确认删除 '"+event_name+"' 吗？")){
+            return false;
+        }
+        $.ajax({
+            "url": "?c=everydaytask&a=delEvent",
+            'type': 'POST',
+            'data': "id="+id,
+            'async':false,
+            'dataType': 'json',
+            'success': function (data) {
+                if(data.code == 1){
+                    layer.alert(data.msg);
+                }else{
+                    layer.alert(data.msg);
+                    window.location.href = '?c=everydaytask&a=index';
+                }
+            }
+        });
+    })
+</script>

@@ -1,0 +1,514 @@
+{include file="header.html"}
+<style>
+    /***/
+    .adminstatus {
+        cursor:pointer;
+    }
+    .post-info>span
+    {
+        display: block;
+        float: left;
+        width:100%;
+        font-family: "Microsoft YaHei" !important;
+    }
+    .post-title
+    {
+        padding-bottom:10px;
+        max-width:350px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight:bold;
+        font-size:16px;
+    }
+    .post-content
+    {
+        margin-bottom:10px;
+        word-break: break-all;
+
+        /*ebkit-line-clamp:3;*/
+        /*overflow: hidden;*/
+        /*text-overflow:ellipsis;       display:-webkit-box !important;*/
+        /*-webkit-box-orient: vertical;*/
+        /*-w*/
+    }
+    .post-img>img
+    {
+        margin-left:10px;
+        width:70px;
+        height:70px;
+    }
+    .post-img>img:nth-child(1)
+    {
+        margin-left:0;
+    }
+    tbody tr
+    {
+        border:0 !important;
+    }
+    tbody tr td
+    {
+        padding:15px 8px !important;
+    }
+    .time-info
+    {
+        display: block;
+        float: left;
+    }
+    .button-td
+    {
+        padding:0;
+        width:50px !important;
+    }
+    .public-th
+    {
+        width:80px;
+    }
+    .common-detail
+    {
+        color:#00a2d4 !important;
+        font-weight:bold;
+    }
+    .post-oper
+    {
+        display: inline-block;
+        float: left;
+        width:30px;
+        height:26px;
+        line-height: 26px;
+        color:#00a2d4;
+
+    }
+    .post-line
+    {
+        margin-top:-2px;
+        width:10px !important;
+        text-align: center;
+    }
+    .post-detail-oper,.post-detail-oper:hover
+    {
+        text-decoration: none !important;
+    }
+    .search1
+    {
+        margin-left:10px;
+        width:80px;
+        height:40px;
+        padding:5px 10px;
+        background: #353535;
+        color:#fff;
+        border:0;
+        outline: none;
+    }
+</style>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">帖子列表</h2>
+        <form name="form1" class="form-inline" method="" action="" style="float: right;margin-right: 100px;margin-top: 30px">
+        <div class="form-group">
+            <select class="form-control datetimepicker source">
+                <option value="">全部来源</option>
+                <option value="2" {if $source==2} selected {/if}>抓取</option>
+                <option value="0" {if $source==0} selected {/if}>用户</option>
+                <option value="1" {if $source==1} selected {/if}>后台</option>
+            </select>
+        </div>
+        </form>
+    </div>
+
+    <div style="clear:both"></div>
+    <!--查询条件列表Start-->
+    <div class="search-input" style="margin-top:20px;">
+        <form action="" method="post" id="form">
+            <input type="hidden" name="source" value="">
+            <input type="text" placeholder="标题和内容关键字" {if $where.title}value="{$where.title}"{/if} name="title" class="search-keyword" >
+            <input type="text" placeholder="手机号" {if $where.phone}value="{$where.phone}"{/if} name="phone" class="phone" >
+            <input type="hidden" name="page" value="{$currentPage}">
+            <span>币种</span><input type="text" {if $where.money}value="{$where.money}"{/if} placeholder="币种" name="money" class="nickname" >
+            <span>发帖时间</span>
+            <input type="text" placeholder="开始时间" name="starttime" class="input-append all-date " id="datetimepicker" data-date-format="yyyy-mm-dd hh:ii:ss" {if $where.starttime}value="{$where.starttime}"{/if} >
+            <input type="text" placeholder="结束时间" name="endtime" {if $where.endtime}value="{$where.endtime}"{/if} class="input-append all-date" id="datetimepicker1" data-date-format="yyyy-mm-dd hh:ii:ss" >
+            <input type="button" class="search" value="搜索">
+            <input type="button" class="clear-search" value="清空">
+            <input type="button" class="del-id-button search1" value="批量删除">
+        </form>
+    </div>
+    <!--查询条件列表End-->
+    <br/>
+    <div style="clear:both"></div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="public-th">
+                        <input type="checkbox" class="del-id" name="postid" style="cursor: pointer;">
+                    </th>
+                    <th class="public-th">ID</th>
+                    <th class="col-sm-1">昵称</th>
+                    <th class="public-th">币圈</th>
+                    <th class="col-sm-3">帖子内容</th>
+                    <th class="col-sm-1">发布时间</th>
+                    <th class="public-th">评论</th>
+                    <th class="public-th">点赞</th>
+                    <th class="public-th">置顶</th>
+                    <th class="public-th">热门置顶</th>
+                    <th class="public-th">加精</th>
+                    <th class="public-th">状态</th>
+                    <th class="public-th">来源</th>
+                    <th class="public-th">删除人</th>
+                    <th class="col-sm-1">操作</th>
+                </tr>
+                </thead>
+                <tbody class="post-append">
+                {if $list}
+                {foreach $list as $item}
+                <tr>
+                    <td>
+                        {if $item.status != -1}
+                        <input type="checkbox" class="del-id-list" name="postid[]" value="{$item.id}" style="cursor: pointer" c_id="{$item.c_id}">
+                        {/if}
+                    </td>
+                    <td>{$item.id}</td>
+                    <td>{$item.phone}<br/>{$item.nickname}</td>
+                    <td>{$item.coin_name}</td>
+                    <td class="post-info">
+                        <span class="post-title">{$item.title}</span>
+                        <span class="post-content">
+                                        {$item.content}
+                                        <span style="display: none;">{$item.hide_content}</span>
+                                        {if $item.show_detail}
+                                            <a class="post-detail-oper" data-value="" href="javascript:void(0);">【详情】</a>
+                                        {/if}
+                                    </span>
+                        <span class="post-img">
+                                        {if $item.img_urls}
+                                            {foreach $item.img_urls as $val}
+                                                {if $val != ''}
+                                                    <img src="{$val}" alt="" width="100" height="100">
+                                                {/if}
+                                            {/foreach}
+                                        {/if}
+                                    </span>
+                    </td>
+                    <td class="time-info">
+                        <span>{$item.create_time}</span>
+                    </td>
+                    <td><a href="?c=posts&a=commentslist&a_id={$item.id}" class="common-detail">{$item.com_num}</a></td>
+                    <td>{$item.like_nums}</td>
+                    <td class="button-td">
+                        <button class="layui-btn layui-btn-primary"  {if $item.is_top ==1}style="border:1px solid #a52a2a;background:none;"{/if}
+                        is_top="{$item.is_top}" onclick='settop("{$item.id}","{$item.status}","{$item.is_top}","{$item.c_id}","{$item.u_id}","1")'>{if $item.is_top==0}<font color="#999">未置顶</font>{else if $item.is_top==1}<font color="#a52a2a">置顶中</font>{/if}</button>
+                    </td>
+                    <td class="button-td">
+                        <button class="layui-btn layui-btn-primary" {if $item.is_hot_top ==1}style="border:1px solid #a52a2a;background:none;"{/if}
+                        is_top="{$item.is_hot_top}" onclick='settop("{$item.id}","{$item.status}","{$item.is_hot_top}","{$item.c_id}","{$item.u_id}","2")'>{if $item.is_hot_top==0}<font color="#999">未置顶</font>{else if $item.is_hot_top==1}<font color="#a52a2a">置顶中</font>{/if}</button>
+                    </td>
+                    <td class="button-td">
+                        <button class="layui-btn layui-btn-primary"
+                                {if $item.is_essence ==1}style="border:1px solid #a52a2a;background:none;"{/if}
+                        is_essence="{$item.is_essence}" onclick='settop("{$item.id}","{$item.status}","{$item.is_essence}","{$item.c_id}","{$item.u_id}","3")'>{if $item.is_essence==0}<font color="#999">未加精</font>{else if $item.is_essence==1}<font color="#a52a2a">已加精</font>{/if}</button>
+                    </td>
+                    <td>
+                        {if $item.status==-1}
+                        <font color="#a52a2a">已删除</font>
+                        {else}
+                        <font color="#006400">正常</font>
+                        {/if}
+                    </td>
+                    {if $item.source==0}
+                    <td>用户</td>
+                    {else if $item.source==1}
+                    <td>后台</td>
+                    {else if $item.source==2}
+                    <td>抓取</td>
+                    {else if $item.source==3}
+                    <td></td>
+                    {/if}
+                    <td>{$item.admin_name}</td>
+                    <td>
+                        {if $item.status==0}
+                        <a href="?c=posts&a=edit&id={$item.id}" class="post-oper">编辑</a>
+                        <span class="post-oper post-line">|</span>
+                        <a href="javascript:;"  class="post-oper" onclick='update("{$item.id}","{$item.c_id}","{$item.u_id}")'>删除</a>
+                        {/if}
+                    </td>
+                </tr>
+                {/foreach}
+                {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div>
+        <span class="pageNum" style="display: block;float: left">共{$pageCount}条</span>
+        <span class="pageList" style="display: block;float: right">{if isset($pageNum)}{$pageNum}{/if}</span>
+    </div>
+</div>
+{include file="footer.html"}
+<script type="text/javascript">
+    $('#datetimepicker,#datetimepicker1').datetimepicker({
+        todayHighlight: 1,//今天高亮
+        autoclose: 1//选择后自动关闭
+    });
+
+    //用户点击清空
+    $(".clear-search").on("click",function(){
+        window.location.href="?c=posts&a=clear";
+    })
+    //用户点击筛选按钮
+    $(".search").on("click",function(){
+        var _this = $(this),form=$("#form");
+        //发送请求
+        ajax_post_list('?c=posts&a=selectPost&p=1',form.serialize());
+    })
+    //点击分类来源
+    $(".source").change("click",function(){
+         var source=$(this).children('option:selected').val();
+         var href='?c=posts&a=selectPost&p=1&source='+source;
+         $("input[name='source']").attr('value',source)
+         ajax_post_list(href);
+    })
+    //用户分页点击按钮
+    $(document).on("click",".pagination a",function(){
+        var _this = $(this),form=$("#form");
+        ajax_post_list(_this.attr('data-url'),form.serialize());
+    })
+
+    //用户点击详情
+    $(document).on("click",".post-detail-oper",function(){
+        var _this = $(this);
+        if(_this.hasClass("p-show"))
+        {
+            _this.removeClass("p-show").text("【详情】");
+            _this.siblings("span").hide();
+        }else{
+            _this.addClass("p-show").text("【收起】");
+            _this.siblings("span").show();
+        }
+    })
+
+    //点击删除--全选/反选
+    $(".del-id").on("click",function(){
+        var _this = $(this);
+        if(_this.attr("checked"))
+        {
+            _this.attr("checked",false);
+            $(".del-id-list").prop("checked",false);
+
+        }else
+        {
+            _this.attr("checked",true);
+            $(".del-id-list").prop("checked",true);
+        }
+    })
+
+    //点击删除按钮
+    $(".del-id-button").on("click",function(){
+        var _this = $(this),arr=[],arr1=[],idlist='',cidlist='';
+        $(".del-id-list:checked").each(function(){
+            arr.push($(this).val());
+            arr1.push($(this).attr('c_id'));
+        })
+        idlist = arr.join(',');
+        cidlist = arr1.join(',');
+        //判断是否选择ID
+        if(idlist == '')
+        {
+            layer.alert('请先选择删除的帖子!');
+            return false;
+        }
+        layer.confirm('是否批量删除？删除后不可撤销！', {
+            btn: ['删除', '不删'] //可以无限个按钮
+        }, function (index, layero) {
+            $.ajax({
+                url:'admin.php?c=posts&a=del_batch_list',
+                type:'post',
+                data:{
+                    idlist:idlist,
+                    cidlist:cidlist,
+                },
+                dataType:'json',
+                success:function(re)
+                {
+                    layer.alert(re.message,function(){
+                        window.location.reload();
+                    });
+                    return false;
+                }
+            })
+        }, function (index,layero) {
+            layer.close(index);
+        });
+    });
+
+
+    //ajax请求列表数据
+    function ajax_post_list(href,data)
+    {
+        $.ajax({
+            url:href,
+            type:'get',
+            data:data,
+            success:function(re)
+            {
+                var re  = eval("("+re+")"),html='';
+                if(re.code == 200)
+                {
+                    $.each(re.data,function(k,v){
+                        //获取图片
+                        var imgHtml = '';
+                        var source = v.source;
+                        if(v.img_urls.length > 0 && v.img_urls)
+                        {
+                            $.each(v.img_urls,function(ik,iv){
+                                if(iv != '' && iv){
+                                    imgHtml+="<img src="+iv+">";
+                                }
+
+                            })
+                        }
+                        if(source==0){
+                           var source_content='用户';
+                        }else if(source==1){
+                           var source_content='后台';
+                        }else if(source==2){
+                           var source_content='抓取';
+                        }else{
+                           var source_content='';
+                        }
+                        html+="<tr>"
+                            +"<td>"+(v.status != -1 ? "<input type='checkbox' class='del-id-list' name='postid[]' value='"+v.id+"' style='cursor: pointer'>":'')+"</td>"
+                            +"<td>"+v.id+"</td>"
+                            +"<td>"+v.phone+"<br/>"+v.nickname+"</td>"
+                            +"<td>"+v.coin_name+"</td>"
+                            +"<td class='post-info'>"
+                            +"<span class='post-title'>"+v.title+"</span>"
+                            +"<span class='post-content'>"+v.content+(v.show_detail ? "<span style='display: none;'>"
+                                +v.hide_content+"</span> <a class='post-detail-oper'"
+                                +"href='javascript:void(0);'>【详情】</a>" : "")+"</span>"
+                            +"<span class='post-img'>"
+                            +(imgHtml ? imgHtml : '')+"</span></td>"
+                            +"<td class='time-info'><span>"+v.create_time+"</span></td>"
+                            +"<td><a href='?c=posts&a=commentslist&a_id="+v.id+"' class='common-detail'>"+v.com_num+"</a></td>"
+                            +"<td>"+v.like_nums+"</td><td class='button-td'>"
+                            +"<button class='layui-btn layui-btn-primary' "
+                            +(v.is_top == 1 ? " style='border:1px solid #a52a2a;background:none;' " : "")
+                            + " is_top='"+v.is_top+"' onclick=settop('"+v.id+"','"+v.status+"','"+v.is_top+"','"+v.c_id+"','"+v.u_id+"','1') >"
+                            +(v.is_top == 0 ? "<font color='#999'>未置顶</font>" : "<font color='#a52a2a'>置顶中</font>")+"</button>"
+                            +"</td><td class='button-td'>"
+                            +"<button class='layui-btn layui-btn-primary'"
+                            +(v.is_hot_top == 1 ? "style='border:1px solid #a52a2a;background:none;'" : '')
+                            +" is_top='"+v.is_hot_top+"'"
+                            +" onclick=settop('"+v.id+"','"+v.status+"','"+v.is_hot_top+"','"+v.c_id+"','"+v.u_id+"','2') >"
+                            +(v.is_hot_top == 0 ? "<font color='#999'>未置顶</font>" : "<font color='#a52a2a'>置顶中</font>")
+                            +"</button></td><td class='button-td'>"
+                            +"<button class='layui-btn layui-btn-primary' "
+                            +(v.is_essence == 1 ? "style='border:1px solid #a52a2a;background:none;' " : '')
+                            +"is_essence="+v.is_essence
+                            +" onclick=settop('"+v.id+"','"+v.status+"','"+v.is_essence+"','"+v.c_id+"','"+v.u_id+"','3')>"
+                            +(v.is_essence==0 ? "<font color='#999'>未加精</font>" : "<font color='#a52a2a'>已加精</font>")
+                            +"</button></td><td>"
+                            +(v.status==-1 ? "<font color='#a52a2a'>已删除</font>" : "<font color='#006400'>正常</font>")
+                            +"</td>"
+                            +"<td>"+source_content+"</td>"
+                            +"<td>"
+                            +v.admin_name+"</td><td>"
+                            +(v.status == 0 ? "<a href='?c=posts&a=edit&id="+v.id+"' class='post-oper'>编辑</a><span class='post-oper post-line'>|</span>"
+                                +"<a href='javascript:;'  class='post-oper' onclick=update('"+v.id+"','"+v.c_id+"','"+v.u_id+"') >删除</a>" : "")
+                            +"</td></tr>";
+                    })
+                    //设置分页
+                    $("input[name='page']").val(re.currentPage);
+                    //清除数据
+                    $(".post-append tr").remove();
+                    //改变分页数据
+                    $(".pageNum").html('共'+re.pageCount+'条');
+                    //重新添加分页数据‘’
+                    $(".pageList ul").remove();
+                    $(".pageList").append(re.pageHtml);
+                    $(".post-append").append(html);
+                }
+            }
+        })
+    }
+
+    //置顶
+    function settop(id,status,top,c_id,u_id,type,essence='1') {
+        if(type == 4){
+            if(essence == 0){
+                throwExc('该帖子不是精华帖');return false;
+            }
+        }
+        //判断该帖子是否删除
+        if(status == -1){
+            throwExc('该帖子已删除');return false;
+        }
+        if(top==0){
+            var title = '确定设置吗？';
+            top = 1;
+        }else{
+            var title = '确定取消吗？';
+            top = 0;
+        }
+        layer.confirm(title, {
+            btn: ['是', '否'] //可以无限个按钮
+            , btn3: function (index, layero) {
+            }
+        }, function (index, layero) {
+            $.ajax({
+                type : "post",
+                url : "?c=posts&a=setTop",
+                data: "id=" + id +'&top='+ top+'&c_id='+c_id+'&type='+type+'&u_id='+u_id,
+                async : true,
+                dataType:'json',
+                success : function(response){
+
+                    if(response.code == 0){
+                        showSucc(response.message);
+                        //拼接url
+                        setTimeout(load(),1000);
+
+                    }else{
+                        throwExc(response.message);return false;
+                    }
+                }
+            });
+        }, function (index,layero) {
+            layer.close(index);
+        });
+    }
+    //删除
+    function update(id,c_id,u_id) {
+        layer.confirm('删除该论坛吗？删除后所有的置顶将消失！', {
+            btn: ['删除', '不删'] //可以无限个按钮
+            , btn3: function (index, layero) {
+            }
+        }, function (index, layero) {
+            ajaxSend(id,'-1',c_id,u_id);
+        }, function (index,layero) {
+            layer.close(index);
+        });
+    }
+    function ajaxSend(id,status,c_id,u_id)
+    {
+        $.ajax({
+            type : "post",
+            url : "?c=posts&a=upPosts",
+            data: "id=" + id +'&status='+ status+'&c_id='+ c_id+'&u_id='+ u_id,
+            async : true,
+            dataType:'json',
+            success : function(response){
+                console.log(response);
+                if(response.code == 0){
+                    showSucc(response.message);
+                    //拼接url
+                    setTimeout(load(),1000);
+                }else{
+                    throwExc(response.message);return false;
+                }
+            }
+        });
+    }
+</script>

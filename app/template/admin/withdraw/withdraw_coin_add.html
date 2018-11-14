@@ -1,0 +1,205 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">提币币种添加</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=withdraw&a=withdraw_rule_list">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+
+        <!-- start 线下合同 -->
+        <div class="tab-pane fade in active" id="no2">
+
+            <form class="form-horizontal"   method="post" id="form01">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">提币币种：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <select name="withdraw_coin_id" id="withdraw_coin_id">
+                            {if $withdraw_coin}
+                            {foreach $withdraw_coin as $key=>$item}
+                            <option value="{$item.coin_id}">{$item.symbol}({$item.nameEn})</option>
+                            {/foreach}
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">最低提币数：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="withdraw_lower_limit" value="" class="form-control" placeholder="最低提币数">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">起止时间：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <select name="start_end_time_status" id="start_end_time_status">
+                            <option value="1">设置时间</option>
+                            <option value="0">不限时间</option>
+                        </select>
+                        <span class = 'hide_show'>
+                            <input type="text" name="start_time" value=""  placeholder="开始时间" id="startTime"> 至
+                            <input type="text" name="end_time" value=""  placeholder="结束时间" id="endTime">
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group" id="set_price">
+                    <label class="col-sm-2 control-label">价格设置：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <span class="input-symbol-euro">
+                            <input type="text" name="set_coin_price" value="" class="form-control" placeholder="价格设置">
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+
+                </div>
+
+
+            </form>
+
+        </div>
+        <!-- end 线下合同 -->
+
+
+    </div>
+    <hr/>
+
+
+</div>
+<style>
+
+    .input-symbol-euro:after {
+        position: absolute;
+        top: 0;
+        margin-top: 7px;
+        content:"￥";
+        right: 18px;
+    }
+</style>
+<script>
+    $("#startTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd hh:ii:ss',autoclose:true, minView: "month" });
+    $("#endTime").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd hh:ii:ss', autoclose:true , minView: "month"});
+</script>
+<script>
+    //页面加载ajax请求 是否显示价格
+    window.onload = function(){
+        checked_coin_id=$("#withdraw_coin_id").val();
+        setPricehideShow(checked_coin_id);
+    };
+    //起止时间下拉框选中事件
+    $("#start_end_time_status").change(function () {
+        select_status=$("#start_end_time_status").val();
+        if(select_status == 1)
+        {
+            $(".hide_show").show();
+        }else {
+            $(".hide_show").hide();
+        }
+    });
+    //提币币种下拉框请求价格
+    $("#withdraw_coin_id").change(function () {
+        checked_coin_id=$("#withdraw_coin_id").val();
+        setPricehideShow(checked_coin_id);
+
+    });
+    //提交表单
+    $("#submit").click(function () {
+        var withdraw_lower_limit=$('input[name=withdraw_lower_limit]').val();
+        var checked_coin_id=$("#withdraw_coin_id").val();
+        var select_status=$("#start_end_time_status").val();
+
+        if($.trim(withdraw_lower_limit)==''  ){
+            throwExc('最低提币数不能为空');
+            return false;
+        }
+        if(coin_is_exist_price(checked_coin_id) != 1){
+            var set_coin_price=$('input[name=set_coin_price]').val();
+            if($.trim(set_coin_price)==''  ){
+                throwExc('价格不能为空');
+                return false;
+            }
+        }
+        if(select_status == 1)
+        {
+            var start_time = $('input[name=start_time]').val();
+            var end_time = $('input[name=end_time]').val();
+
+            if($.trim(start_time)==''){
+                throwExc('开始时间必须填写');
+                return false;
+            }
+            if($.trim(end_time)==''){
+                throwExc('结束时间必须填写');
+                return false;
+            }
+            var start = new Date(start_time.replace("-", "/").replace("-", "/"));
+            var end = new Date(end_time.replace("-", "/").replace("-", "/"));
+            if(end<start){
+                throwExc('结束时间必须大于开始时间');
+                return false;
+            }
+        }
+        $.ajax({
+            "url": "?c=withdraw&a=withdraw_coin_add",
+            'type': 'POST',
+            'data': $('#form01').serialize(),
+            'dataType': 'json',
+            'success': function (data) {
+                console.log(data)
+                if (data.error != 0) {
+                    layer.alert(data.message);
+                    setTimeout("load()",1000)
+                }
+                else {
+                    layer.alert(data.message);
+                    return false;
+                }
+            }
+
+        });
+
+
+    });
+    //ajax请求添加币种是否存在价格
+    function coin_is_exist_price(checked_coin_id) {
+        $.ajax({
+            "url": "?c=withdraw&a=is_exist_price",
+            'type': 'POST',
+            "async":false,
+            'data':"coin_id="+checked_coin_id,
+            'dataType': 'json',
+            'success': function (data) {
+                price_status = data;
+            }
+
+        });
+        return price_status;
+
+
+    }
+    //设置价格显示隐藏
+    function setPricehideShow(checked_coin_id) {
+        $.ajax({
+            "url": "?c=withdraw&a=is_exist_price",
+            'type': 'POST',
+            'data':"coin_id="+checked_coin_id,
+            'dataType': 'json',
+            'success': function (data) {
+                if(data == 1)
+                {
+                    $("#set_price").hide();
+                }else{
+                    $("#set_price").show();
+
+                }
+            }
+
+        });
+    }
+
+</script>
+{include file="footer.html"}

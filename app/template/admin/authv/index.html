@@ -1,0 +1,212 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">标识认证<small>auth_v</small></h2>
+    <!--查询条件列表Start-->
+    <div class="search-input">
+        <form action="" method="post" id="form">
+            <input type="text" placeholder="手机号" name="phone" class="phone" >
+            <input type="text" placeholder="昵称" name="nickname" class="nickname" >
+            <input type="text" placeholder="邀请码" name="invitation_code" class="nickname" >
+            <!--<input type="hidden" name="order" >-->
+            <!--<span>注册时间</span>-->
+            <!--<input type="text" placeholder="开始时间" name="starttime" class="input-append date " id="datetimepicker" data-date-format="yyyy-mm-dd" >-->
+            <!--<input type="text" placeholder="结束时间" name="endtime" class="input-append date" id="datetimepicker1" data-date-format="yyyy-mm-dd" >-->
+
+            <!--<span >积分</span> <input type="text" name="integralstart" class="inter"><span class="inter-span">-</span><input class="inter" type="text" name="integralend">-->
+            <input type="button" class="search" value="搜索">
+            <!--<input type="button" class="clear-search" value="清空">-->
+            <!--<a href="javascript:void(0);" data-href="admin.php?c=user&a=importantData" class="important">导出Execl到本地</a>-->
+        </form>
+    </div>
+    <!--查询条件列表End-->
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="col-sm-1">UID</th>
+                    <th class="col-sm-1">手机号</th>
+                    <th class="col-sm-1">昵称</th>
+                    <th class="col-sm-1">用户类型</th>
+                    <th class="col-sm-1">认证签名</th>
+                    <th class="col-sm-1">认证时间</th>
+                    <th class="col-sm-1">头像</th>
+                    <th >操作</th>
+                    <input type="hidden" name="p" value="0">
+                    <input type="hidden" name="uid" value="0">
+                </tr>
+                </tr>
+                </thead>
+                <tbody class="user_list">
+                {if $list}
+                {foreach $list as $key=>$item}
+                <tr>
+                    <td>{$item.id}</td>
+                    <td>{$item.phone}</td>
+                    <td>{$item.nickname}</td>
+                    <td>{$item.v_status}</td>
+                    <td>{$item.v_sign}</td>
+                    <td>{$item.v_time}</td>
+                    <td><img src="{if isset($item.headimgurl)}{$item.headimgurl}{/if}" width="60px" height="50px"></td>
+                    <td>
+                        <a href="javascript:void(0);"  class="btn btn-primary btn-xs szpq start" pid="{$item.id}">认证操作</a>
+                        <!--<a class="btn btn-primary btn-xs szpq" id='del' event_id="{$item.id}" event_name="{$item.name}">认证操作</a>-->
+                    </td>
+                </tr>
+                {/foreach}
+                {/if}
+
+                </tbody>
+            </table>
+            <div>
+                <span class="pageNum" style="display: block;float: left">共{$pageCount}条</span>
+                <span class="pageList" style="display: block;float: right">{if isset($pageNum)}{$pageNum}{/if}</span>
+            </div>
+        </div>
+        <!-- end 已上线 -->
+    </div>
+
+</div>
+</div>
+</div>
+</body>
+
+<script type="text/javascript">
+
+    //清空查找数据
+    $(".clear-search").on("click",function(){
+        $("#form input[type='text']").val('');
+    })
+
+    //用户列表操作Start
+    $('#datetimepicker,#datetimepicker1').datetimepicker({
+        todayHighlight: 1,//今天高亮
+        minView: "month",//设置只显示到月份
+        autoclose: 1//选择后自动关闭
+    });
+    //点击提交查询
+    $(".search").on("click",function(){
+        var _this = $(this),form=$("#form");
+        requestData(form.serialize(),'get','?c=auth_v&a=selectUser'+getArgv());
+    })
+
+    //点击分页查询
+    $(document).on("click",".pagination a",function(){
+        var _this = $(this);
+        requestData('','get',_this.attr('data-url')+getArgv());
+    })
+
+
+    //设置请求的参数
+    function  getArgv()
+    {
+        var form = $("#form");
+        return '&'+form.serialize();
+    }
+
+    //发送请求,请求数据
+    function requestData(argv,method,url)
+    {
+        //发送ajax
+        $.ajax({
+            url:url,
+            type:method,
+            dataType:'Json',
+            data:(argv ? argv : ''),
+            success:function (data) {
+                var html = '';
+                if(data.code == 200){
+                    //形成html
+                    html = genHtml(data.data);
+                    //清空列表
+                    $(".user_list>tr").remove();
+                    $(".user_list").append(html);
+                    //追加分页
+                    $(".pageList>ul").remove();
+                    $(".pageList").append(data.pageHtml);
+                    //显示分页书
+                    $(".pageNum").text("共"+data.pageCount+"条");
+                }
+            }
+        })
+    }
+
+    //生成 html
+    function genHtml(data){
+        var html = '';
+        var nospeech_time_html = '';
+        $.each(data,function(k,v){
+            nospeech_time_html = "<a href='javascript:void(0);'  class='btn btn-primary btn-xs szpq' pid="+v.id+">认证操作</a>";
+            html+="<tr><td>"+v.id+"</td>"
+                +"<td>"+v.phone+"</td>"
+                +"<td>"+v.nickname+"</td>"
+                +"<td>"+v.v_status+"</td>"
+                +"<td>"+v.v_sign+"</td>"
+                +"<td>"+v.v_time+"</td>"
+                +"<td><img width='60px' height='50px' src="+v.headimgurl+"></td>"
+                +"<td>"+ nospeech_time_html+"</td>"
+                +"</tr>";
+        })
+        //<td class='intergal-detail' data-value="+v.user_id+">"+(v.integral_total ? v.integral_total : '0.00')+"</td>
+        return html;
+    }
+    //认证操作
+    $(function(){
+        $(document).on("click",".start",function(){
+
+            var uid=$(this).attr('pid');
+            alter(uid);
+
+            var html = "<div style='margin-left: 50px;margin-top: 20px;' >当前状态：</div>";
+
+            //html +="<option value =\"no_page\">";
+            html += "<div class=\"form-group\" style='margin-top: 30px;margin-left: 25px' >";
+            html += "<label class=\"radio-inline\">";
+            html += "<label class=\"radio-inline\">";
+
+            html += <label class="radio-inline">
+            html += <input type="radio" name="type"  value="3" {if $adInfor.type == 3 }checked {/if}> 个人中心
+            html += </label>
+
+
+            html +="</label></div>";
+
+            html += "<div class=\"form-group\"><div class=\"col-sm-7\"><button type=\"button\" class=\"btn btn-primary add_company pull-right\" id=\"submit\">提交</button></div></div>";
+
+
+            layer.open({
+                type: 1,
+                skin: 'layui-layer-rim', //加上边框
+                area: ['200px', '200px'], //宽高
+                content: html
+            });
+
+            $("#submit").click(function () {
+                var jump_list = $('#jump_list option:selected').val();
+
+                $.ajax({
+                    "url": "?c=user&a=nospeech_time",
+                    'type': 'POST',
+                    'data': 'uid='+uid+"&time="+jump_list,
+                    'dataType': 'json',
+                    'success': function (data) {
+                        console.log(data)
+                        if (data.error != 0) {
+                            layer.alert(data.message);
+                            setTimeout("load()",1000)
+                        }
+                        else {
+                            layer.alert(data.message);
+                            return false;
+                        }
+                    }
+
+                });
+            })
+
+
+        });
+    })
+
+</script>

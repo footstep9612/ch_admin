@@ -1,0 +1,102 @@
+{include file="header.html"}
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <form class="form-horizontal" id="form01">
+        <div class="top-title">
+            <h2 class="sub-header">修改分类</h2>
+        </div>
+        <div style="clear:both"></div>
+        <br>
+        <h5 class="sub-header">币名：{$coin_name}</h5>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">所属分类</span><i>*</i></label>
+            <div class="col-sm-3">
+                <select name="category" id="category">
+                    {if $allusedCategory}
+                    {foreach $allusedCategory as $key=>$item}
+                    <option value="{$item.c_id}">{$item.category_name}</option>
+                    {/foreach}
+                    {/if}
+                </select>
+            </div>
+        </div>
+        <!--<div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">币种</span><i>*</i></label>
+            <div class="col-sm-3">
+                <select name="coin" id="coin">
+                    {if $allCoin}
+                    {foreach $allCoin as $key=>$item}
+                    <option value="{$item.coin_id}">{$item.coin_symbol}</option>
+                    {/foreach}
+                    {/if}
+                </select>
+
+            </div>
+        </div>-->
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">排序分值</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="text" name="score" value="" id="score" class="form-control" placeholder="排序分值">
+            </div>
+        </div>
+
+
+        <div class="form-group" align="center">
+            <div class="col-sm-7">
+                <input type="hidden" name="up_id" value="{$category_id}" class="form-control">
+                <button type="button" class="btn btn-primary" >提交</button>
+            </div>
+
+        </div>
+        <!-- <div class="form-group">
+             <label class="col-sm-2 control-label"><span class="name_span">是否启用</span><i>*</i></label>
+             <div class="col-sm-3">
+                 <input type="radio" name="used" value="1" >启用
+                 <input type="radio" name="used" value="0">不启用
+             </div>
+         </div>-->
+    </form>
+
+</div>
+<script>
+    $(function () {
+        //提交表单
+        $(":button").click(function () {
+            var category_name = $("#category").val();
+            var coin = $("#coin").val();
+            var score = $("#score").val();
+
+            if($.trim(category_name) == ''){
+                throwExc('分类名称必填');
+                return false;
+            }
+
+            if($.trim(score) == ''){
+                throwExc('分值必填');
+                return false;
+            }
+
+            $.ajax({
+                "url": "?c=category&a=upcategorycoin",
+                'type': 'POST',
+                'data': $('#form01').serialize(),
+                'dataType': 'json',
+                'success': function (data) {
+                    if(data.code == 1){
+                        layer.alert(data.message);
+                    }else{
+                        layer.alert(data.message);
+                        window.location.href = '?c=category&a=categorycoinlist';
+                    }
+
+
+                }
+            });
+        });
+
+    });
+
+
+</script>
+{include file="footer.html"}

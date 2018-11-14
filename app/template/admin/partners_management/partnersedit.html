@@ -1,0 +1,85 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">编辑合作人圈子</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=partners_management&a=partnersList">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 线下合同 -->
+        <div class="tab-pane fade in active" id="no2">
+            <form class="form-horizontal" method="post" id="form02">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">合作人：</label>
+                    <div class="col-sm-2">
+                        <select class="form-control datetimepicker" id="ad_user_id" name="ad_user_id">
+                            <option value="{$data.ad_user_id}" >{$data.name}</option>
+                        </select><font color=red>编辑时不可修改合作人</font>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">圈子：</label>
+                    <div class="col-sm-2">
+                        <select class="form-control datetimepicker" id="coin_id" name="coin_id">
+                            <option value="0" >请选择</option>
+                            {if $coinList}
+                            {foreach $coinList as $v1}
+                            <option value="{$v1.id}" {if $data.coin_id == $v1.id} selected {/if}>{$v1.coin_symbol}（{$v1.coin_name}）</option>
+                            {/foreach}
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">是否开启：</label>
+                    <div class="col-sm-1">
+                        <select class="form-control" id="status" name="status">
+                            <option value="1" {if $data.status == "1"} selected {/if}>开启</option>
+                            <option value="0" {if $data.status == "0"} selected {/if}>禁用</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <input type="hidden" name="id" value="{$data.id}">
+                        <button type="button" class="btn btn-primary add_company pull-right" >提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- end 线下合同 -->
+    </div>
+    <hr/>
+</div>
+
+<script>
+    function load(){
+        window.location.href="?c=partners_management&a=partnersList";
+    }
+    $(".add_company").click(function(){
+        var coin_id=$('#coin_id').val();
+        if(coin_id==0){
+            throwExc('圈子必须选择');
+            return false;
+        }
+        $.ajax({
+            "url": "?c=partners_management&a=partnersEdit",
+            'type': 'POST',
+            'data': $('#form02').serialize(),
+            'dataType': 'json',
+            'success': function (response) {
+                if(response.error==100) {
+                    throwExc(response.msg);
+                    return false;
+                }else if(response.error==200) {
+                    showSucc(response.msg);
+                    setTimeout("load()",1000);
+                }
+            }
+        });
+    });
+
+
+</script>
+{include file="footer.html"}

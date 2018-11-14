@@ -1,0 +1,343 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <h2 class="sub-header">用户列表&nbsp;&nbsp;<small>auth_user</small></h2>
+    <!--查询条件列表Start-->
+    <div class="search-input">
+        <form action="" method="post" id="form">
+            <input type="text" placeholder="手机号" name="phone" class="phone" >
+            <input type="text" placeholder="昵称" name="nickname" class="nickname" >
+            <input type="text" placeholder="邀请码" name="invitation_code" class="nickname" >
+            <input type="hidden" name="order" >
+            <span>注册时间</span>
+            <input type="text" placeholder="开始时间" name="starttime" class="input-append date " id="datetimepicker" data-date-format="yyyy-mm-dd" >
+            <input type="text" placeholder="结束时间" name="endtime" class="input-append date" id="datetimepicker1" data-date-format="yyyy-mm-dd" >
+
+            <span >积分</span> <input type="text" name="integralstart" class="inter"><span class="inter-span">-</span><input class="inter" type="text" name="integralend">
+            <input type="button" class="search" value="搜索">
+            <input type="button" class="clear-search" value="清空">
+            <a href="javascript:void(0);" data-href="admin.php?c=user&a=importantData" class="important">导出Execl到本地</a>
+        </form>
+    </div>
+    <!--查询条件列表End-->
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="col-sm-1">UID</th>
+                    <th class="col-sm-1">手机号</th>
+                    <th class="col-sm-1">昵称</th>
+                    <th class="col-sm-1">用户类型</th>
+                    <th class="col-sm-1">认证签名</th>
+                    <th class="col-sm-1">认证时间</th>
+                    <th class="col-sm-1">头像</th>
+                    <th >操作</th>
+                    <input type="hidden" name="p" value="0">
+                    <input type="hidden" name="uid" value="0">
+                </tr>
+                </tr>
+                </thead>
+                <tbody class="user_list">
+                {if $list}
+                {foreach $list as $key=>$item}
+                <tr>
+                    <td>{$item.id}</td>
+                    <td>{$item.username}</td>
+                    <td>{$item.nickname}</td>
+                    <td>
+                        <!--{if ($item.v_status==0)} 普通用户 {/if}-->
+                        <!--{if ($item.v_status==1)} 橙V认证 {/if}-->
+                        <!--{if ($item.v_status==2)} 蓝V认证 {/if}-->
+                        <!--{if ($item.v_status==3)} 必牛官方 {/if}-->
+                    </td>
+                    <td>{$item.v_sign}</td>
+                    <td>{$item.v_time}</td>
+                    <td><img src="{if isset($item.headimgurl)}{$item.headimgurl}{/if}" width="60px" height="50px"></td>
+                    <td>
+                        <a class="btn btn-primary btn-xs szpq" id='del' event_id="{$item.id}" event_name="{$item.name}">认证操作</a>
+                    </td>
+                </tr>
+                {/foreach}
+                {/if}
+
+                </tbody>
+            </table>
+            <div>
+                <span class="pageNum" style="display: block;float: left">共{$pageCount}条</span>
+                <span class="pageList" style="display: block;float: right">{if isset($pageNum)}{$pageNum}{/if}</span>
+            </div>
+        </div>
+        <!-- end 已上线 -->
+    </div>
+
+</div>
+</div>
+</div>
+
+<!--<div class="public-master hidden">-->
+    <!--<div  class="public-alert  alertShow">-->
+        <!--<div class="public-alert-title">-->
+            <!--积分详情-->
+            <!--<span class="close-public-icon">✖</span>-->
+        <!--</div>-->
+        <!--<div class="public-alert-conent">-->
+            <!--<div class="public-alert-over">-->
+                <!--<div class="intergal-list">-->
+                <!--</div>-->
+                <!--<div class="load-more">-->
+                    <!--加载更多&gt;&gt;-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+</body>
+
+<script type="text/javascript">
+
+    //清空查找数据
+    $(".clear-search").on("click",function(){
+        $("#form input[type='text']").val('');
+    })
+
+    //用户列表操作Start
+    $('#datetimepicker,#datetimepicker1').datetimepicker({
+        todayHighlight: 1,//今天高亮
+        minView: "month",//设置只显示到月份
+        autoclose: 1//选择后自动关闭
+    });
+    //点击提交查询
+    $(".search").on("click",function(){
+        var _this = $(this),form=$("#form");
+        requestData(form.serialize(),'get','?c=user&a=selectUser'+getArgv());
+    })
+
+    //点击分页查询
+    $(document).on("click",".pagination a",function(){
+        var _this = $(this);
+        requestData('','get',_this.attr('data-url')+getArgv());
+    })
+
+    //排序点击
+    $(".click-a").on("click",function(){
+        var _this = $(this);
+        if(_this.hasClass("click-down"))
+        {
+            _this.removeClass("click-down").addClass("click-up").text("⬆");
+            $("input[name='order']").val(_this.attr('data-down'));
+            requestData('','get',_this.attr('href')+getArgv());
+        }else{
+            _this.removeClass("click-up").addClass("click-down").text("⬇");
+            $("input[name='order']").val(_this.attr('data-up'));
+            requestData('','get',_this.attr('href')+getArgv());
+        }
+        return false;
+    })
+
+    //导入按钮点击
+    $(".important").on("click",function(){
+        var _this = $(this),form=$("#form");
+        window.location.href= _this.attr("data-href")+"&"+form.serialize();
+    })
+
+    //设置请求的参数
+    function  getArgv()
+    {
+        var form = $("#form");
+        return '&'+form.serialize();
+    }
+
+    //发送请求,请求数据
+    function requestData(argv,method,url)
+    {
+        //发送ajax
+        $.ajax({
+            url:url,
+            type:method,
+            dataType:'Json',
+            data:(argv ? argv : ''),
+            success:function (data) {
+                var html = '';
+                if(data.code == 200){
+                    //形成html
+                    html = genHtml(data.data);
+                    //清空列表
+                    $(".user_list>tr").remove();
+                    $(".user_list").append(html);
+                    //追加分页
+                    $(".pageList>ul").remove();
+                    $(".pageList").append(data.pageHtml);
+                    //显示分页书
+                    $(".pageNum").text("共"+data.pageCount+"条");
+                }
+            }
+        })
+    }
+
+    //生成 html
+    function genHtml(data){
+        var html = '';
+        var nospeech_time_html = '';
+        $.each(data,function(k,v){
+            if(v.nospeech_time == 2){
+                nospeech_time_html = "<a href='javascript:void(0);'  class='btn btn-danger btn-xs ' pid="+v.user_id+">已禁言</a>";
+            }else{
+                nospeech_time_html = "<a href='javascript:void(0);'  class='btn btn-success btn-xs start' pid="+v.user_id+">禁言</a>";
+            }
+            html+="<tr><td>"+v.user_id+"</td>"
+                +"<td>"+v.phone+"</td>"
+                +"<td>"+v.nickname+"</td>"
+                +"<td>"+v.create_time+"</td>"
+                +"<td>"+v.apprentice_count+"</td>"
+                +"<td>"+v.disciple_count+"</td>"
+                +"<td>"+v.post_count+"</td>"
+                +"<td>"+v.followcircle_count+"</td>"
+                +"<td>"+v.invitation_code+"</td>"
+                +"<td class='intergal-detail' data-value="+v.user_id+">"+(v.integral_total ? v.integral_total : '0.00')+"</td>"
+                +"<td>"+ nospeech_time_html+"</td>"
+                +"</tr>";
+        })
+        //<td class='intergal-detail' data-value="+v.user_id+">"+(v.integral_total ? v.integral_total : '0.00')+"</td>
+        return html;
+    }
+
+    //用户列表操作End
+
+
+    //用户点击积分详情
+    $(document).on("click",".intergal-detail",function(){
+        $(".public-master").addClass("hidden");
+        $(".load-more").html("加载更多数据&gt;&gt;");
+        $("input[name='p']").val(0);
+        var _this = $(this),data='';
+        data={
+            uid:_this.attr("data-value"),
+            p:0
+        };
+        $("input[name='uid']").val(_this.attr('data-value'));
+        $.get("?c=user&a=selectUserIntergal",data,function(data)
+        {
+            var data = eval("("+data+")");
+            if(data.code == 200)
+            {
+                $(".public-master").removeClass("hidden");
+                $(".public-alert").removeClass("alertHide").addClass("alertShow");
+                $(".intergal-list div").remove();
+                if(data.data && data.data.length > 0) {
+                    var html = '';
+                    $.each(data.data, function (k, v) {
+                        html += "<div><span class='intergal-content'>"
+                            + "<span class='intergal-info'>" + v.name + "</span>"
+                            + "<span class='intergal-time'>" + v.create_time + "</span></span>"
+                            + "<span class='intergal-num'>"
+                            + "+" + v.event_integral + "</span></div>";
+                    })
+                    $(".intergal-list").append(html);
+                    $("input[name='p']").val(parseInt($("input[name='p']").val()) + 1);
+                }else
+                {
+                    $(".load-more").html("无更多数据");
+                }
+            }
+        })
+    })
+    //点击加载更多加在数据
+    $(document).on("click",".load-more",function(){
+        data={
+            uid:$("input[name='uid']").val(),
+            p:$("input[name='p']").val()
+        };
+        $.get("?c=user&a=selectUserIntergal",data,function(data)
+        {
+            var data = eval("("+data+")");
+            if(data.code == 200)
+            {
+                if(data.data && data.data.length > 0)
+                {
+                    var html = '';
+                    $.each(data.data,function(k,v){
+                        html += "<div><span class='intergal-content'>"
+                            +"<span class='intergal-info'>"+v.name+"</span>"
+                            +"<span class='intergal-time'>"+v.create_time+"</span></span>"
+                            +"<span class='intergal-num'>"
+                            +"+"+v.event_integral+"</span></div>";
+                    })
+                    $(".intergal-list").append(html);
+                    $("input[name='p']").val(parseInt($("input[name='p']").val())+1);
+                }else{
+                    $(".load-more").html("无更多数据");
+                }
+            }
+        })
+
+    })
+    //用户点击关闭
+    $(document).on("click",".close-public-icon",function(){
+        $(".public-alert").removeClass("alertShow").addClass("alertHide");
+        setTimeout(function(){
+            $(".public-master").addClass("hidden");
+        },300)
+
+    })
+
+
+
+    $(function(){
+        $(document).on("click",".start",function(){
+
+            var uid=$(this).attr('pid');
+
+            var html = "<div style='margin-left: 50px;margin-top: 20px;' >禁言时长</div><div class=\"form-group\" style='margin-top: 30px;margin-left: 25px' ><label class=\"radio-inline\"><select name=\"jump_list\" id=\"jump_list\" >";
+
+            //html +="<option value =\"no_page\">";
+
+            //for(var i=1;i<=30;i++){
+            html += "<option value ='1'>1天</option>";
+            html += "<option value ='3'>3天</option>";
+            html += "<option value ='7'>7天</option>";
+            html += "<option value ='1000'>永久</option>";
+            //}
+
+            // html +="</option></select></label></div>";
+            html +="</select></label></div>";
+
+            html += "<div class=\"form-group\"><div class=\"col-sm-7\"><button type=\"button\" class=\"btn btn-primary add_company pull-right\" id=\"submit\">提交</button></div></div>";
+
+
+            layer.open({
+                type: 1,
+                skin: 'layui-layer-rim', //加上边框
+                area: ['200px', '200px'], //宽高
+                content: html
+            });
+
+            $("#submit").click(function () {
+                var jump_list = $('#jump_list option:selected').val();
+
+                $.ajax({
+                    "url": "?c=user&a=nospeech_time",
+                    'type': 'POST',
+                    'data': 'uid='+uid+"&time="+jump_list,
+                    'dataType': 'json',
+                    'success': function (data) {
+                        console.log(data)
+                        if (data.error != 0) {
+                            layer.alert(data.message);
+                            setTimeout("load()",1000)
+                        }
+                        else {
+                            layer.alert(data.message);
+                            return false;
+                        }
+                    }
+
+                });
+            })
+
+
+        });
+    })
+
+
+</script>

@@ -1,0 +1,187 @@
+{include file="header.html"}
+<style>
+    .adminstatus { cursor:pointer;} 
+</style>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">消息通知</h2>
+    </div>
+
+    <div style="clear:both"></div>
+    <form name="form1" class="form-inline" method="post" action="">
+    <a href="?c=message_notification&a=messageAdd" class="btn btn-success">添加</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div class="form-group">
+            <label for="title" class="input-group">标题</label>
+            <div class="input-group">
+                <input id="title" class="form-control datetimepicker" name="title" value="{$searchs.title}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="status" class="input-group">状态</label>
+            <div class="input-group">
+                <select class="form-control datetimepicker" id="status" name="status">
+                    <option value="" {if $searchs.status=="" && $searchs.status!="0"} selected {/if}>请选择</option>
+                    <option value="0" {if $searchs.status=="0" && $searchs.status!=""} selected {/if}>正常</option>
+                    <option value="-1" {if $searchs.status=="-1"} selected {/if}>删除</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="input-group">开始时间</label>
+            <div class="input-group">
+                <input id="start_time" class="form-control datetimepicker" name="start_time" value="{$searchs.start_time}" readonly>
+                <span class="input-group-addon "><div  class="glyphicon glyphicon-calendar"></div></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="input-group">结束时间</label>
+            <div class="input-group">
+                <input id="end_time" class="form-control datetimepicker" name="end_time" value="{$searchs.end_time}" readonly>
+                <span class="input-group-addon "><div  class="glyphicon glyphicon-calendar"></div></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" class="form-control" name="submit" value="筛选">
+        </div>
+        <div class="form-group">
+            <a href="?c=message_notification&a=clear" class="btn btn-success">清空</a>
+        </div>
+    </form>
+    <br/>
+    <div style="clear:both"></div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th class="col-sm-1">ID</th>
+                    <th class="col-sm-2">标题</th>
+                    <th class="col-sm-3">地址</th>
+                    <th class="col-sm-1">状态</th>
+                    <th class="col-sm-2">发送时间</th>
+                    <th class="col-sm-1">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {if $list}
+                {foreach $list as $item}
+                <tr>
+                    <td>{$item.id}</td>
+                    <td>{$item.mes_title}</td>
+                    <td>{$item.url}</td>
+                    <td id="status_{$item.id}">
+                        {if $item.status==-1}
+                            <font color="#a52a2a">已删除</font>
+                        {else if $item.status==0}
+                            <button onclick='sendmessage("{$item.id}","{$item.status}")'><font color="#a52a2a">未发送</font></button>
+                        {else}
+                            <font color="#006400">已发送</font>
+                        {/if}
+                    </td>
+                    <td id="time_{$item.id}">{$item.send_time}</td>
+                    <td id="done_{$item.id}">
+                        <button class="btn btn-primary btn-xs" onclick='show_detail("1","{$item.id}");'>预览</button>
+                        {if $item.status==0}
+                        <a href="?c=message_notification&a=edit&id={$item.id}" class="btn btn-primary btn-xs">编辑</a>
+                        {/if}
+                        {if $item.status>=0}
+                        <a href="javascript:;"  class="btn btn-info btn-xs" onclick='update("{$item.id}")'>删除</a>
+                        {/if}
+                    </td>
+                </tr>
+                {/foreach}
+                {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div >{if isset($total_num)} <span style="font-size: 25px;">总计{$total_num}条{/if}</span></div>
+    <div>{if isset($page_num)}{$page_num}{/if}</div>
+</div>
+{include file="footer.html"}
+<script type="text/javascript">
+    //删除
+    function update(id) {
+        layer.confirm('删除该通知吗', {
+            btn: ['删除', '不删'] //可以无限个按钮
+            , btn3: function (index, layero) {
+            }
+        }, function (index, layero) {
+            $.ajax({
+                type : "post",
+                url : "?c=message_notification&a=mesDelete",
+                data: "id=" + id,
+                async : true,
+                dataType:'json',
+                success : function(response){
+                    if(response.code == 200){
+                        showSucc(response.msg);
+                        setTimeout(load(),1000);
+                    }else{
+                        throwExc(response.msg);return false;
+                    }
+                }
+            });
+        }, function (index,layero) {
+            layer.close(index);
+        });
+    }
+
+    function show_detail(type,id){
+        $.post("?c=message_notification&a=preview",{
+            'type':type,
+            'id':id
+        },function( response ){
+              layer.open({
+                type: 1,
+                title:  '375           ×          667',
+                offset: 'auto',
+                area: ['375px', '667px'],
+                resize: true, 
+                content:  response,
+                resizing: function(layero){
+                  console.log(layero); 
+                  parent.$(".layui-layer-title")[0].innerText =  layero[0].clientWidth+"     ×      "+ layero[0].clientHeight;  
+                }   
+            });       
+        });
+    }
+
+    //置顶
+    function sendmessage(id,status) {
+        //判断该消息是否发送
+        if(status != 0){
+            throwExc('数据异常，请联系开发人员！！');return false;
+        }
+        var title = '确定发送吗？发送时间默认为当前时间！';
+        layer.confirm(title, {
+            btn: ['是', '否'] //可以无限个按钮
+            , btn3: function (index, layero) {
+            }
+        }, function (index, layero) {
+            $.ajax({
+                type : "post",
+                url : "?c=message_notification&a=sendMessage",
+                data: "id=" + id +'&status='+ status,
+                async : true,
+                dataType:'json',
+                success : function(response){
+                    if(response.code == 200){
+                        showSucc(response.msg);
+                        $("#status_"+id).html('<font color="#006400">已发送</font>');
+                        var onclick="show_detail('1','"+id+"');";
+                        var a = '<button class="btn btn-primary btn-xs" onclick="'+onclick+'">预览</button>';
+                        $("#done_"+id).html(a);
+                        $("#time_"+id).html(response.datas.send_time);
+                    }else{
+                        throwExc(response.msg);return false;
+                    }
+                }
+            });
+        }, function (index,layero) {
+            layer.close(index);
+        });
+    }
+</script>

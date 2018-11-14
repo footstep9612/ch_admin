@@ -1,0 +1,389 @@
+{include file="header.html"}
+<style>
+    #file_upload_pre
+    {
+        position: relative;
+        display: inline-block;
+        float: left;
+        min-height:300px !important;
+    }
+
+
+    .close_img
+    {
+        position: absolute;
+        display: block;
+        top:0;
+        right:40px;
+        width:20px;
+        height:20px;
+        cursor: pointer;
+        text-align: center;
+        background: #000;
+        color:#fff;
+        font-size:12px;
+        line-height: 20px;
+    }
+
+
+</style>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">帖子发布</h2>
+        <div class="top-tools">
+    <!--        <a class="btn btn-default" href="?c=cms_ad">返回</a>-->
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+
+        <!-- start 线下合同 -->
+        <div class="tab-pane fade in active" id="no2">
+
+            <form class="form-horizontal"   method="post" id="form01">
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">请选择用户:</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <div class="input-group">
+                                {if $userList}
+                                {foreach $userList as $key=>$item}
+                                    <input type="radio" name="u_id" value="{$item.id}">
+                                    {$item.username}
+                                    (
+                                        {if $item.nickname}
+                                            {$item.nickname}
+                                        {else}
+                                            {$item.username}
+                                        {/if}
+                                    )
+                                {/foreach}
+                                {/if}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">请填写币种编号:</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <select name="c_id" id="c_id">
+                            {if $allCoin}
+                            {foreach $allCoin as $key=>$item}
+                            <option value="{$item.coin_id}">{$item.coin_symbol}({$item.coin_name})</option>
+                            {/foreach}
+                            {/if}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">帖子标题：</label>
+                    <div class="col-sm-6">
+                        <textarea rows="5" cols="60" name="title"  id="title" ></textarea>
+                        <div class="textareaTip">您还可以再输入<strong id="textareaCount">30</strong>个字</div>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">帖子内容：</span><i>*</i></label>
+                    <div class="col-sm-6">
+                        <textarea rows="10" cols="60" name="content"  id="content" ></textarea>
+                    </div>
+                </div>
+
+
+                <!--文件上传分组Start-->
+                <div id="uploadFile" class="form-group">
+                    <label  class="col-sm-2 control-label">图片：</label>
+
+                    <!--图片上传一Start-->
+                    <div class="col-sm-2">
+                        <!--图片一Start-->
+                        <div id="file-upload-pre" >
+                            <!--隐藏文本域-->
+                            <input type="hidden" id="file-0" name="medias_id[]" {if !empty($post_detail.img_urls[0])} value="{$post_detail.img_urls[0]}" {else} value="" {/if}>
+
+                            {if !empty($post_detail.img_urls[0])} <span class="close_img" data-value=0>X</span> {/if}
+                            <div style="margin-bottom:15px;width:200px;height:150px;border:1px solid #CCCCCC;">
+                                <img width="100%" height="100%" {if !empty($post_detail.img_urls[0])} src="{$post_detail.img_urls[0]}" {/if}>
+                            </div>
+
+                        </div>
+                        <!--图片一End-->
+                        <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn" id="btn-0" data-index="0"  value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" data-index="0" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                    <!--图片上传一End-->
+
+                    <!--图片上传二Start-->
+                    <div class="col-sm-2">
+                        <!--图片二Start-->
+                        <div id="file-upload-pre" >
+                            <input type="hidden" id="file-1" name="medias_id[]" {if !empty($post_detail.img_urls[1])} value="{$post_detail.img_urls[1]}" {else} value="" {/if}>
+                            {if !empty($post_detail.img_urls[1])} <span class="close_img" data-value=1>X</span> {/if}
+                            <div style="margin-bottom:15px;width:200px;height:150px;border:1px solid #CCCCCC;">
+                                <img width="100%" height="100%" {if !empty($post_detail.img_urls[1])} src="{$post_detail.img_urls[1]}" {/if}>
+                            </div>
+                        </div>
+                        <!--图片二End-->
+                        <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn" id="btn-1" data-index="1"  value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" data-index="1" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                    <!--图片上传二End-->
+
+                    <!--图片上传三Start-->
+                    <div class="col-sm-2">
+
+                        <!--图片三Start-->
+                        <div id="file-upload-pre" >
+                            <input type="hidden" id="file-2" name="medias_id[]" {if !empty($post_detail.img_urls[2])} value="{$post_detail.img_urls[2]}" {else} value="" {/if}>
+                            {if !empty($post_detail.img_urls[2])} <span class="close_img" data-value=2>X</span> {/if}
+                            <div style="margin-bottom:15px;width:200px;height:150px;border:1px solid #CCCCCC;">
+                                <img width="100%" height="100%" {if !empty($post_detail.img_urls[2])} src="{$post_detail.img_urls[2]}" {/if}>
+                            </div>
+                        </div>
+                        <!--图片三End-->
+
+                        <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn " id="btn-2" data-index="2"  value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" data-index="2" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                    <!--图片上传三End-->
+
+                    <!--上传四Start-->
+                    <div class="col-sm-2">
+                        <!--图片四Start-->
+                        <div id="file-upload-pre" >
+                            <input type="hidden" id="file-3" name="medias_id[]" {if !empty($post_detail.img_urls[3])} value="{$post_detail.img_urls[3]}" {else} value="" {/if}>
+                            {if !empty($post_detail.img_urls[3])} <span class="close_img" data-value=3>X</span> {/if}
+                            <div style="margin-bottom:15px;width:200px;height:150px;border:1px solid #CCCCCC;">
+                                <img width="100%" height="100%" {if !empty($post_detail.img_urls[3])} src="{$post_detail.img_urls[3]}" {/if}>
+                            </div>
+                        </div>
+                        <!--图片四End-->
+
+                        <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn" id="btn-3" data-index="3"  value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" data-index="3" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                    <!--图片上传四End-->
+                </div>
+                <!--文件上传分组End-->
+                <div class="form-group">
+                    <div class="col-sm-6">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+
+                </div>
+
+
+            </form>
+
+        </div>
+        <!-- end 线下合同 -->
+        <input type="hidden" class="btn btn-success" id="mutile-btn" value="选择图片" />
+
+    </div>
+    <hr/>
+
+
+</div>
+
+
+
+<script>
+    var index     = 0;
+    var files        = [];
+    var file_url     =  window.location.pathname;
+    var uploaderLogo = new plupload.Uploader({
+        runtimes : 'html5,flash,silverlight,html4',
+        url : file_url+'?c=upload&a=upload_url&n=' + Math.random(),
+        flash_swf_url : 'admin/js/Moxie.cdn.swf',
+        silverlight_xap_url : 'admin/js/Moxie.cdn.xap',
+        multiple_queues:false,
+        multi_selection:false,
+        browse_button:['btn-0','btn-1','btn-2','btn-3'],
+        filters : {
+            max_file_size : '10mb',
+            mime_types : [ //只允许上传图片和zip文件
+                { title : "Image files", extensions : "jpg,png" }
+            ]
+        }
+    });
+
+    uploaderLogo.init();
+
+    $(".upload-btn").on("click",function(){
+        index = $(this).attr('data-index');
+    })
+
+    //点击调起上传方法
+    $(".confirm-btn").on("click",function(){
+        index = $(this).attr('data-index');
+        uploaderLogo.start();
+    })
+
+    //绑定选择后事件
+    uploaderLogo.bind("FilesAdded",function(up,files){
+        var files =files.pop();
+        var fileid = '#file-'+index;
+        previewImage(files,function(src){
+            $(fileid).siblings("div").find("img").remove();
+            var html = "<img width='100%' height='100%' src='"+src+"'>";
+            $(fileid).siblings("div").append(html);
+            $(fileid).siblings("span.close_img").remove();
+            $(fileid).parent("div").append("<span class='close_img' data-value='"+index+"'>X</span>");
+        });
+    })
+
+    //绑定上传事件
+    uploaderLogo.bind("FileUploaded",function(uploader,file,responseObject){
+        var files = uploader.files;
+        for (v in files)
+        {
+            if(v !== index)
+                uploaderLogo.stop();
+        }
+        try{
+            var fileid = '#file-'+index;
+            var data = JSON.parse(responseObject.response);
+            $(fileid+"+#file-upload-pre").html('<img width="200px" height="150px" src="'+ data.url+ '" />');
+            $(fileid).val(data.url);
+            layer.msg('上传成功!', {
+                icon:1
+            });
+        }catch (e){
+            $("#form-logo-container").html('');
+            layer.msg('上传失败!',{
+                icon:2
+            })
+
+            return ;
+        }
+    })
+
+
+    //点击删除图片
+    $(document).on("click",".close_img",function(){
+        var _this = $(this),index = _this.attr('data-value');
+        _this.siblings("div").find("img").remove();
+        _this.remove();
+        $("#file-"+index).val('');
+    })
+
+
+    function previewImage(file, callback) {
+        if (!file || !/image\//.test(file.type)) return;
+        if (file.type == 'image/gif') {
+            var fr = new mOxie.FileReader();
+            fr.onload = function () {
+                callback(fr.result);
+                fr.destroy();
+                fr = null;
+            }
+            fr.readAsDataURL(file.getSource());
+        } else {
+            var preloader = new mOxie.Image();
+            preloader.onload = function () {
+
+                var imgsrc = preloader.type == 'image/jpeg' ? preloader.getAsDataURL('image/jpeg', 80) : preloader.getAsDataURL();
+                callback && callback(imgsrc);
+                preloader.destroy();
+                preloader = null;
+            };
+            preloader.load(file.getSource());
+        }
+    }
+</script>
+<script>
+    function load(){
+        window.location.href = '?c=posts&a=add';
+    }
+    function checkUrl(urlString){
+        if(urlString!=""){
+            var reg=/(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
+            if(!reg.test(urlString)){
+                return false;
+            }else{
+                return true;
+            }
+        }
+    }
+
+
+    function my_array_name(m){
+        var valArr = [];
+        $("input[name='"+m+"[]']").each(function(i){
+            if($(this).val() != ""){
+                valArr[i] = $(this).val();
+            }
+        });
+        var priv = valArr.join(',');
+        return priv;
+    }
+
+    $('#title').keyup(function() {
+        var maxLength = 30;
+        var len = $('#title').val().length;
+        $('#textareaCount').html(maxLength - len);
+        if(parseInt($('#textareaCount').text()) < 0) {
+            $('#textareaCount').html('0');
+            var res = $(this).val().substring(0, 30);
+            $(this).val(res);
+        }
+    });
+
+
+    $(function () {
+
+        //提交表单
+        $("#submit").click(function () {
+        var u_id = $("input[type='radio']:checked").val();
+        var c_id = $("#c_id").val();
+        var title = $('#title').val();
+        var content=$('#content').val();
+
+        var medias_id = my_array_name('medias_id');
+
+        if($.trim(u_id)==''){
+                throwExc('发帖用户必须选择');
+                return false;
+         }
+
+        if($.trim(c_id)==''){
+            throwExc('币种必须填写');
+            return false;
+        }
+        if(isNaN(c_id)){
+            throwExc('币种必须数字编号');
+            return false;
+        }
+
+        if($.trim(content)==''){
+            throwExc('帖子内容必须填写');
+            return false;
+        }
+
+
+    /*   if($.trim(medias_id)==''){
+            throwExc('图片必须填写');
+            return false;
+        }*/
+         var data =    $('#form01').serialize();
+             data = data+'&medias_id='+medias_id;
+
+            $.ajax({
+                "url": "?c=posts&a=add",
+                'type': 'POST',
+                'data': data,
+                'dataType': 'json',
+                'success': function (data) {
+                    console.log(data)
+                   if (data.error != 0) {
+                        layer.alert(data.message);
+                        setTimeout("load()",1000)
+                    }
+                    else {
+                        layer.alert(data.message);
+                        return false;
+                    }
+                }
+
+            });
+        });
+
+    });
+</script>
+{include file="footer.html"}

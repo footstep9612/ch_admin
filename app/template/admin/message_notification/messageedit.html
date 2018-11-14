@@ -1,0 +1,126 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">编辑消息</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=message_notification">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 线下合同 -->
+        <div class="tab-pane fade in active" id="no2">
+            <form class="form-horizontal" method="post" id="form02">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">标题：</label>
+                    <div class="col-sm-6">
+                        <input type="text" name="mes_title" value="{$data.mes_title}" id="mes_title" class="form-control" placeholder="标题">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">跳转地址：</label>
+                    <div class="col-sm-6">
+                        <input type="text" name="url"  id="url" class="form-control" value="{$data.url}" placeholder="跳转地址">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">文章内容：</label>
+                    <div class="col-sm-8">
+                        <textarea  name="content"  id="content" >{$data.mes_content}</textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-3">
+                        <button type="button" class="btn btn-primary pull-right" onclick="show_detail();">预览</button>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="hidden" name="id" value="{$data.id}">
+                        <button type="button" class="btn btn-primary add_company pull-right" >提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- end 线下合同 -->
+    </div>
+    <hr/>
+</div>
+
+<script>
+    $("#send_time").datetimepicker({ language:'zh-CN',format: 'yyyy-mm-dd hh:ii:ss',autoclose:true, minView: "hour" });
+    var ue_content = UE.getEditor('content');
+
+    function show_detail(){
+        var title=$('input[name=mes_title]').val();
+        var content= ue_content.getContent();  
+        $.post("?c=message_notification&a=preview",{
+            'title':title,
+            'content':content
+        },function( response ){
+              layer.open({
+                type: 1,
+                title:  '375           ×          667',
+                offset: 'auto',
+                area: ['375px', '667px'],
+                resize: true, 
+                content:  response,
+                resizing: function(layero){
+                  console.log(layero); 
+                  parent.$(".layui-layer-title")[0].innerText =  layero[0].clientWidth+"     ×      "+ layero[0].clientHeight;  
+                }   
+            });       
+        });
+    }
+
+
+    var saving = false;
+    $('#form02').submit(function()
+    {
+        saving = true;
+    });
+    var flag=true;
+    window.onbeforeunload = function() {
+        if (saving)
+            return;
+        if(is_form_changed()) {
+            return "您的修改内容还没有保存，您确定离开吗？";
+        }
+    }
+
+    function load(){
+        window.location.href="?c=message_notification&a=index";
+    }
+    $(".add_company").click(function(){
+        if(false==flag){
+            return;
+        }
+        var mes_title=$('input[name=mes_title]').val();
+        var url=$('#url').val();
+        var content= ue_content.getContent();
+        if($.trim(mes_title)==''){
+            throwExc('标题必须填写');
+            return false;
+        }
+        var len = ue_content.getContentLength();
+        if(len==0){
+            throwExc('文章内容必须填写');
+            return false;
+        }
+        $.ajax({
+            "url": "?c=message_notification&a=edit",
+            'type': 'POST',
+            'data': $('#form02').serialize(),
+            'dataType': 'json',
+            'success': function (response) {
+                if(response.error==100) {
+                    throwExc(response.msg);
+                    return false;
+                }else if(response.error==200) {
+                    showSucc(response.msg);
+                    setTimeout("load()",1000);
+                }
+            }
+        });
+    });
+
+
+</script>
+{include file="footer.html"}

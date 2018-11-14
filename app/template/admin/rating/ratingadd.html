@@ -1,0 +1,315 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">添加入口</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=pingji&a=ratingList">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 线下合同 -->
+        <div class="tab-pane fade in active" id="no2">
+            <form class="form-horizontal"   method="post" id="form01">
+                <!--<div class="form-group" >-->
+                    <!--<div class="col-sm-7">-->
+                        <!--<input type="hidden" name="is_grade" value="" id="is_grade" class="form-control">-->
+                    <!--</div>-->
+                <!--</div>-->
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">评级标题：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="title" value="" id="title" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">简介：</label>
+                    <div class="col-sm-6">
+                        <textarea rows="5" cols="80" name="intro"  id="intro" ></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">PDF内容：</label>
+                    <div class="col-sm-8">
+                        <textarea  name="content"  id="content" ></textarea>
+                    </div>
+                </div>
+                <div class="form-group" id="locationId">
+                    <label  class="col-sm-2 control-label">跳转地址：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="jump_url" value="{$H5_URL_MSG}" id="jump_url" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">评级对象：</span><i>*</i></label>
+
+                    <label class="radio-inline">
+                        <select name="coin_id" id="coin_id" >
+                            {foreach $coininfo as $key=> $value}
+                            <option value ="{$value.coin_id}">{$value.coin_symbol}（{$value.coin_name}）</option>
+                            {/foreach}
+                            <!--<option value ="2">右边显示</option>-->
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">评级来源：</span><i>*</i></label>
+
+                    <label class="radio-inline">
+                        <select name="source" id="ration_from" >
+                            {foreach $get_source_info as $key=> $value}
+                            <option value ="{$value.id}" >{$value.coin_name} </option>
+                            {/foreach}
+                            <!--<option value ="2">右边显示</option>-->
+                        </select>
+                    </label>
+                </div>
+                <div id="uploadFile" class="form-group">
+                    <label  class="col-sm-2 control-label">上传封面：</label>
+                    <div class="col-sm-2">
+                        <input type="hidden" id="file-0" name="medias_id[]" value="">
+                        <div id="file-upload-pre" ><img width="200px" height="150px"></div>
+                        <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn" data-index="0"  value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+
+                    <!--<label  class="col-sm-2 control-label">PDF文件：</label>-->
+                    <!--<div class="col-sm-2">-->
+                        <!--<input type="hidden" id="file-1" name="medias_id[]" value="">-->
+                        <!--<div id="file-upload-pre" ><img width="200px" height="150px"></div>-->
+                        <!--<span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn" data-index="1"  value="选择PDF" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" id="form-input-upload-logo-button" value="确认上传" />-->
+                    <!--</div>-->
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span class="name_span">是否隐藏</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status" id="status_no" value="1" checked>隐藏
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status" id="status_yes" value="0"> 不隐藏
+                    </label>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- end 线下合同 -->
+        <input type="hidden" class="btn btn-success" id="mutile-btn" value="选择图片" />
+
+    </div>
+    <hr/>
+</div>
+<script>
+    var index = 0;
+    var files = [];
+    var uploadBtn = document.getElementById('uploadFile');
+    uploadBtn.addEventListener('click', function (e) {
+        var className = e.target.className;
+        if (className.indexOf('upload-btn') !== -1) {
+            index = +e.target.dataset.index;
+            document.getElementById('mutile-btn').click();
+        }
+    })
+
+    var file_url =  window.location.pathname;
+    var uploaderLogo = new plupload.Uploader({
+        runtimes : 'html5,flash,silverlight,html4',
+        browse_button : 'mutile-btn', // you can pass an id...
+        url : file_url+'?c=upload&a=upload_url&n=' + Math.random(),
+        flash_swf_url : 'admin/js/Moxie.cdn.swf',
+        silverlight_xap_url : 'admin/js/Moxie.cdn.xap',
+
+        filters : {
+            max_file_size : '10mb',
+            mime_types : [ //只允许上传图片和zip文件
+                { title : "Image files", extensions : "jpg,png,pdf" }
+            ]
+        },
+        init: {
+            PostInit: function() {
+                uploadBtn.addEventListener('click', function (e) {
+                    var className = e.target.className;
+                    if (className.indexOf('confirm-btn') !== -1) {
+                        uploaderLogo.start();
+                        return false;;
+                    }
+                })
+            },
+            FileUploaded: function (uploader,file,responseObject){
+
+                try{
+                    var fileid = '#file-'+index;
+                    var data = JSON.parse(responseObject.response);
+                    if(data.types=='pdf'){
+                        $(fileid+"+#file-upload-pre").html('<font color=green>文件上传成功</font>');
+                    }else{
+                        $(fileid+"+#file-upload-pre").html('<img width="200px" height="150px" src="'+ data.url+ '" />');
+                    }
+                    $(fileid).val(data.url);
+                }catch (e){
+                    $("#form-logo-container").html('');
+                    throwExc('上传失败请稍后重试...');
+                    return ;
+                }
+            },
+            FilesAdded: function(up, files) {
+                var file =files.pop();
+                var fileid = '#file-'+index;
+                $(fileid+"+#file-upload-pre").html( file.name);
+            }
+        }
+    });
+    uploaderLogo.init();
+//以上为文件上传代码，一下问表单提交代码
+    function load(){
+        window.location.href = '?c=pingji&a=ratingList';
+    }
+    function my_array_name(m){
+        var valArr = [];
+        $("input[name='"+m+"[]']").each(function(i){
+            if($(this).val() != ""){
+                valArr[i] = $(this).val();
+            }
+        });
+
+        return valArr;
+    }
+
+    $(function () {
+        //提交表单
+        $("#submit").click(function () {
+            var title = $("#title").val();//标题
+            //var content = $("#content").val();//内容
+            var jump_url = $("#jump_url").val();//跳转地址
+            var medias_id = my_array_name('medias_id');
+            if($.trim(title)==''||$.trim(jump_url)==''){
+                throwExc('有未填写的信息');
+                return false;
+            }
+            if(medias_id.length < 1){
+                throwExc('图片或PDF文件未上传');
+                return false;
+            }
+            var priv = medias_id.join(',');
+            var data =    $('#form01').serialize();
+            data = data+'&medias_id='+priv;
+            $.ajax({
+                "url": "?c=pingji&a=ratingAdd",
+                'type': 'POST',
+                'data': data,
+                'dataType': 'json',
+                'success': function (data) {
+                    if (data.error != 0) {
+                        layer.alert(data.message);
+                        setTimeout("load()",1000)
+                    } else {
+                        layer.alert(data.message);
+                        return false;
+                    }
+                }
+            });
+        })
+    })
+    //传值
+    $("#coin_id").change(function () {
+        var is_grade = $(this).find("option:selected").attr("is_grade")
+       $("#is_grade").attr('value',is_grade);
+    })
+
+    //圈子隐藏列表
+    function is_neibu(){
+        var options=$("#is_neibu option:selected").val();
+        if(options == 'exchange')
+         {
+             $("#locationId").hide();
+         }
+         if(options == 'wblink'){
+             $("#locationId").show();
+         }
+    };
+   //编辑器
+    var ue_content = UE.getEditor('content');
+
+    function show_detail(){
+        var title=$('input[name=mes_title]').val();
+        var time=$('#send_time').val();
+        var content= ue_content.getContent();
+        $.post("?c=message_notification&a=preview",{
+            'title':title,
+            'content':content,
+            'send_time':time,
+        },function( response ){
+            layer.open({
+                type: 1,
+                title:  '375           ×          667',
+                offset: 'auto',
+                area: ['375px', '667px'],
+                resize: true,
+                content:  response,
+                resizing: function(layero){
+                    console.log(layero);
+                    parent.$(".layui-layer-title")[0].innerText =  layero[0].clientWidth+"     ×      "+ layero[0].clientHeight;
+                }
+            });
+        });
+    }
+
+
+    var saving = false;
+    $('#form02').submit(function()
+    {
+        saving = true;
+    });
+    var flag=true;
+    window.onbeforeunload = function() {
+        if (saving)
+            return;
+        if(is_form_changed()) {
+            return "您的修改内容还没有保存，您确定离开吗？";
+        }
+    }
+
+//    function load(){
+//        window.location.href="?c=message_notification&a=index";
+//    }
+//    $(".add_company").click(function(){
+//        if(false==flag){
+//            return;
+//        }
+//        var mes_title=$('input[name=mes_title]').val();
+//        var url=$('input[name=url]').val();
+//        if($.trim(mes_title)==''){
+//            throwExc('标题必须填写');
+//            return false;
+//        }
+//        if($.trim(url)==''){
+//            throwExc('地址必须填写');
+//            return false;
+//        }
+//        var len = ue_content.getContentLength();
+//        if(len==0){
+//            throwExc('文章内容必须填写');
+//            return false;
+//        }
+//        $.ajax({
+//            "url": "?c=pingji&a=ratingAdd",
+//            'type': 'POST',
+//            'data': $('#form02').serialize(),
+//            'dataType': 'json',
+//            'success': function (response) {
+//                if(response.error==100) {
+//                    throwExc(response.msg);
+//                    return false;
+//                }else if(response.error==200) {
+//                    showSucc(response.msg);
+//                    setTimeout("load()",1000);
+//                }
+//            }
+//        });
+//    });
+
+
+
+</script>
+{include file="footer.html"}

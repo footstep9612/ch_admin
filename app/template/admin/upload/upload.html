@@ -1,0 +1,51 @@
+{include file="header.html"}
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">app上传</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="history.go(-1)">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+
+        <!-- start 线下合同 -->
+        <div class="tab-pane fade in active" id="no2">
+            <form  enctype="multipart/form-data" method="post" id="form01">
+                        <input type="file" name="filename"  value="123">
+                       <input type="text" name="lwc"  value="456">
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <input type="button" value="提交">
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+        <!-- end 线下合同 -->
+    </div>
+    <hr/>
+
+</div>
+{include file="footer.html"}
+
+<script>
+$(":button").click(function () {
+    var formData = new FormData($( "#form01" )[0]);
+    $.ajax({
+        "url": "?c=upload&a=upload_new",
+        'type': 'POST',
+        'data':formData,
+        'async': false,
+        'cache': false,
+        'contentType': false,
+        'processData': false,
+        'dataType': 'json',
+        'success': function (response) {
+            console.log(response)
+        }
+    });
+
+})
+</script>

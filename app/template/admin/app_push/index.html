@@ -1,0 +1,118 @@
+{include file="header.html"}
+<style>
+    .adminstatus { cursor:pointer;} 
+</style>
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">推送消息列表</h2>
+    </div>
+
+    <div style="clear:both">
+        <a href="?c=app_push&a=add" class="btn btn-success">新建推送消息</a>
+    </div>
+    <br/>
+    <form name="form1" class="form-inline" method="get" >
+       <div class="form-group">
+           <input type="hidden" name="c" value="app_push">
+           <input type="hidden" name="a" value="index">
+            <div class="form-group">
+                <select  name="type" class="form-control">
+                    <option value="0">选择类型</option>
+                    <option value="1" {if $search.type eq 1} selected="selected" {/if}>圈子详情</option>
+                    <option value="2" {if $search.type eq 2} selected="selected" {/if}>帖子详情</option>
+                    <option value="3" {if $search.type eq 3} selected="selected" {/if}>h5</option>
+                    <option value="4" {if $search.type eq 4} selected="selected" {/if}>兑换列表</option>
+                </select>
+            </div>
+            &nbsp; &nbsp; &nbsp;
+            <div class="form-group">
+                内容：<input type="text" class="form-control" name="title" value="{$search.title}" placeholder="内容" size="40">
+            </div> 
+
+            <button type="submit" class="btn btn-default" onClick="form1.submit();">查询</button>
+           <div class="form-group">
+               <a href="?c=app_push&a=index" class="btn btn-success">清空</a>
+           </div>
+        </div>
+    </form>
+
+    <div style="clear:both"></div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 已上线 -->
+        <div class="table-responsive tab-pane fade in active" id="no2">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th >id</th>
+                    <th class="col-sm-1">类型</th>
+                    <th >标题</th>
+                    <th>内容</th>
+                    <th>对应id</th>
+                    <th class="col-sm-1">状态</th>
+                    <th class="col-sm-1">时间</th>
+                    <th class="col-sm-1">任务创建人</th>
+                    <!--<th class="col-sm-1">操作</th>-->
+                </tr>
+                </thead>
+                <tbody>
+                {if $result}
+                {foreach $result as $k=>$item}
+                <tr>
+                    <td>{$item.id}</td>
+                    <td >{if $item.type == 1} 圈子详情 {elseif $item.type == 2} 帖子详情 {elseif $item.type == 3} h5{elseif $item.type == 2} 兑换列表{/if}</td>
+                    <td>{$item.title}</td>
+                    <td>{$item.content}</td>
+                    <td>{$item.t_id}</td>
+                    <td >{if $item.status == 1} 成功 {elseif $item.type == 2} 失败 {else}创建成功{/if}</td>
+                    <td>{$item.create_time}</td>
+                    <td>{if isset($item.name)}{$item.name}{/if}</td>
+                    <!--<td>
+
+
+                         <a href="javascript:;" class="btn btn-danger btn-xs status" pid="{$item.id}"></a></td>
+
+
+                   </td>
+                   -->
+               </tr>
+               {/foreach}
+               {/if}
+               </tbody>
+           </table>
+       </div>
+   </div>
+   <div>{if isset($pageNum)}{$pageNum}{/if}</div>
+</div>
+</div>
+</div>
+</body>
+
+{include file="footer.html"}
+<script type="text/javascript">
+   $(function(){
+       $(".status").click(function(){
+           var id=$(this).attr('pid');
+           if(!id){ throwExc('没有参数');return false };
+           if(!confirm('确认删除吗')){
+               return false;
+           }
+           $.ajax({
+               type : "post",
+               url : "?c=information&a=remove",
+               data: "id=" + id,
+               async : false,
+               dataType:'json',
+               success : function(response){
+                   console.log(response)
+                   if(response.code == 0){
+                       window.location.href=window.location.href;
+                   }else{
+                       throwExc(response.message);return false;
+                   }
+               }
+           });
+
+   })
+   })
+
+</script>

@@ -1,0 +1,157 @@
+{include file="header.html"}
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+    <form class="form-horizontal" id="form01">
+        <div class="top-title">
+            <h2 class="sub-header">编辑任务</h2>
+            <div class="top-tools">
+              <a class="btn btn-default" href="?c=event">返回</a>
+            </div>
+        </div>
+        <div style="clear:both"></div>
+        <br>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">任务名称</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="text" name="name"  id="name" class="form-control" value="{$event_data.name}">
+                <input type="hidden" name="id"  id="id" class="form-control" value="{$event_data.id}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">任务标识</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="text" name="event_code"  id="event_code" class="form-control" value="{$event_data.event_code}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">任务描述</span><i>*</i></label>
+            <div class="col-sm-3">
+                <textarea name="event_desc"  id="event_desc" class="form-control" placeholder="任务描述">{$event_data.event_desc}</textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">任务分值</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="text" name="event_integral"  id="event_integral" class="form-control" value="{$event_data.event_integral}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">权重</span><i>*</i></label>
+            <div class="col-sm-3">
+                <select name="weight" id="weight" class="form-control">
+                    <option value="1" {if $event_data.weight eq 1}selected{/if}>1</option>
+                    <option value="2" {if $event_data.weight eq 2}selected{/if}>2</option>
+                    <option value="3" {if $event_data.weight eq 3}selected{/if}>3</option>
+                    <option value="4" {if $event_data.weight eq 4}selected{/if}>4</option>
+                    <option value="5" {if $event_data.weight eq 5}selected{/if}>5</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">跳转地址</span></label>
+            <div class="col-sm-3">
+                <input type="text" name="url"  id="url" class="form-control" value="{$event_data.url}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">任务天数限制</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="text" name="rule_days"  id="rule_days" class="form-control" value="{$event_data.rule_days}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">任务天数内次数限制</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="text" name="rule_number_limit"  id="rule_number_limit" class="form-control" value="{$event_data.rule_number_limit}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">是否展示</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="radio" name="is_show" value="1" {if $event_data.is_show eq 1}checked{/if}>展示
+                <input type="radio" name="is_show" value="0" {if $event_data.is_show eq 0}checked{/if}>不展示
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">是否启用</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="radio" name="status" value="1" {if $event_data.status eq 1}checked{/if}>启用
+                <input type="radio" name="status" value="0" {if $event_data.status eq 0}checked{/if}>不启用
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="name_span">按钮描述</span><i>*</i></label>
+            <div class="col-sm-3">
+                <input type="text" name="button_desc"  id="button_desc" class="form-control" value="{$event_data.button_desc}">
+            </div>
+        </div>
+        <div class="form-group" align="center">
+            <div class="col-sm-7">
+                <button type="button" class="btn btn-primary" >修改</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+<script>
+    $(function () {
+        //提交表单
+        $(":button").click(function () {
+            var name = $("#name").val();
+            var event_code = $("#event_code").val();
+            var event_desc = $("#event_desc").val();
+            var event_integral = $("#event_integral").val();
+            var rule_days = $("#rule_days").val();
+            var rule_number_limit = $("#rule_number_limit").val();
+            var button_desc = $("#button_desc").val();
+            if($.trim(name) == '' || $.trim(event_code) == ''){
+                throwExc('任务名称必填');
+                return false;
+            }
+            if($.trim(event_code) == ''){
+                throwExc('任务标识必填');
+                return false;
+            }
+            if($.trim(event_desc) == ''){
+                throwExc('任务描述必填');
+                return false;
+            }
+            if($.trim(event_integral) == ''){
+                throwExc('任务分值必填');
+                return false;
+            }
+            if($.trim(rule_days) == ''){
+                throwExc('任务天数限制');
+                return false;
+            }
+            if($.trim(rule_number_limit) == ''){
+                throwExc('任务天数内次数限制');
+                return false;
+            }
+            if($.trim(button_desc) == ''){
+                throwExc('按钮描述必填');
+                return false;
+            }
+
+            $.ajax({
+                "url": "?c=event&a=upEvent",
+                'type': 'POST',
+                'data': $('#form01').serialize(),
+                'async':false,
+                'dataType': 'json',
+                'success': function (data) {
+                    if(data.code == 1){
+                        layer.alert(data.msg);
+                    }else{
+                        layer.alert(data.msg);
+                        window.location.href = '?c=event&a=index';
+                    }
+                }
+            });
+        });
+
+    });
+
+</script>
+{include file="footer.html"}

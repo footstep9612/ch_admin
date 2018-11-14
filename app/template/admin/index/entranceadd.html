@@ -1,0 +1,232 @@
+{include file="header.html"}
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <div class="top-title">
+        <h2 class="sub-header">添加入口</h2>
+        <div class="top-tools">
+            <a class="btn btn-default" href="?c=index&a=entrancelist">返回</a>
+        </div>
+    </div>
+    <div id="myTabContent" class="tab-content" style="margin-top:10px">
+        <!-- start 线下合同 -->
+        <div class="tab-pane fade in active" id="no2">
+            <form class="form-horizontal"   method="post" id="form01">
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">首页标题：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="type" value=""  class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">文本上栏：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="candy_ad_desc_up" value="" id="candy_up" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">文本下栏：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="candy_ad_desc_down" value="" id="candy_down" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group" onclick="is_neibu()">
+                    <label  class="col-sm-2 control-label">内外部链接地址：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="link" id="is_neibu"  class="type">
+                            {foreach $link_url as $key=>$value}
+                            <option value ='{$key}'>{$value}</option>
+                             {/foreach}
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group" id="locationId">
+                    <label  class="col-sm-2 control-label">跳转地址：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="url" value="" id="url" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">是否需要登陆：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="is_login" id="location_page" >
+                            <option value ="1">否</option>
+                            <option value ="2">是</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">按钮文本：</span><i>*</i></label>
+                    <div class="col-sm-7">
+                        <input type="text" name="button" value="" id="button" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">审核类型：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="auditing" id="auditing" >
+                            <option value ="1">正常审核 </option>
+                            <option value ="2">IOS审核</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label  class="col-sm-2 control-label">位置展示：</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <select name="coin_where" id="coin_where" >
+                            <option value ="1">首页 </option>
+                            <option value ="2">其他</option>
+                        </select>
+                    </label>
+                </div>
+                <div id="uploadFile" class="form-group">
+                    <label  class="col-sm-2 control-label">上传封面：</label>
+                    <div class="col-sm-2">
+                        <input type="hidden" id="file-0" name="background_image" value="">
+                        <div id="file-upload-pre" ><img width="200px" height="150px"></div>
+                        <span id="form-logo-container"></span>&nbsp;&nbsp;<input type="button" class="btn btn-success upload-btn" data-index="0"  value="选择图片" />&nbsp;&nbsp;&nbsp;<input type="button" class="btn btn-warning confirm-btn" id="form-input-upload-logo-button" value="确认上传" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"><span class="name_span">是否隐藏</span><i>*</i></label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status" id="status_no" value="0" checked>隐藏
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="status" id="status_yes" value="1"> 不隐藏
+                    </label>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-7">
+                        <button type="button" class="btn btn-primary add_company pull-right" id="submit">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- end 线下合同 -->
+        <input type="hidden" class="btn btn-success" id="mutile-btn" value="选择图片" />
+        <input type="hidden" id="back_img" value="{$backimg}">
+    </div>
+    <hr/>
+</div>
+<script>
+    var index = 0;
+    var files = [];
+    var uploadBtn = document.getElementById('uploadFile');
+    uploadBtn.addEventListener('click', function (e) {
+        var className = e.target.className;
+        if (className.indexOf('upload-btn') !== -1) {
+            index = +e.target.dataset.index;
+            document.getElementById('mutile-btn').click();
+        }
+    })
+
+    var file_url =  window.location.pathname;
+    var uploaderLogo = new plupload.Uploader({
+        runtimes : 'html5,flash,silverlight,html4',
+        browse_button : 'mutile-btn', // you can pass an id...
+        url : file_url+'?c=upload&a=upload_url&n=' + Math.random(),
+        flash_swf_url : 'admin/js/Moxie.cdn.swf',
+        silverlight_xap_url : 'admin/js/Moxie.cdn.xap',
+
+        filters : {
+            max_file_size : '10mb',
+            mime_types : [ //只允许上传图片和zip文件
+                { title : "Image files", extensions : "jpg,png,pdf" }
+            ]
+        },
+        init: {
+            PostInit: function() {
+                uploadBtn.addEventListener('click', function (e) {
+                    var className = e.target.className;
+                    if (className.indexOf('confirm-btn') !== -1) {
+                        uploaderLogo.start();
+                        return false;;
+                    }
+                })
+            },
+            FileUploaded: function (uploader,file,responseObject){
+
+                try{
+                    var fileid = '#file-'+index;
+                    var data = JSON.parse(responseObject.response);
+                    if(data.types=='pdf'){
+                        $(fileid+"+#file-upload-pre").html('<font color=green>文件上传成功</font>');
+                    }else{
+                        $(fileid+"+#file-upload-pre").html('<img width="200px" height="150px" src="'+ data.url+ '" />');
+                    }
+                    $(fileid).val(data.url);
+                }catch (e){
+                    $("#form-logo-container").html('');
+                    throwExc('上传失败请稍后重试...');
+                    return ;
+                }
+            },
+            FilesAdded: function(up, files) {
+                var file =files.pop();
+                var fileid = '#file-'+index;
+                $(fileid+"+#file-upload-pre").html( file.name);
+            }
+        }
+    });
+    uploaderLogo.init();
+    //以上为图片上传代码，一下问表单提交代码
+    function load(){
+        window.location.href = '?c=index&a=entranceList';
+    }
+
+    //获取活动名称的ID
+    $(".type").change(function () {
+        var SelectType=$(".type option:selected").val();
+        var back_img=$('#back_img').val();
+        if(SelectType=='wblink'){
+            $("#cate_img").attr('value',back_img);
+        }else if(SelectType=='exchange'){
+            $("#cate_img").attr('value',2);
+        }else if(SelectType=='task_list'){
+            $("#cate_img").attr('value',3);
+        }
+    })
+    $(function () {
+        //提交表单
+        $("#submit").click(function () {
+            var candy_up = $("#candy_up").val();
+            var url = $("#url").val();
+            var button = $("#button").val();
+
+            var auditing =$("#auditing").val();
+            if($.trim(auditing)=='' ||$.trim(candy_up)=='' || $.trim(button)==''){
+                throwExc('有未填写的信息');
+                return false;
+            }
+            $.ajax({
+                "url": "?c=index&a=entranceAdd",
+                'type': 'POST',
+                'data': $('#form01').serialize(),
+                'dataType': 'json',
+                'success': function (data) {
+                    if (data.error != 0) {
+                        layer.alert(data.message);
+                        setTimeout("load()",1000)
+                    } else {
+                        layer.alert(data.message);
+                        return false;
+                    }
+                }
+            });
+        })
+    })
+    //圈子隐藏列表
+    function is_neibu(){
+        var options=$("#is_neibu option:selected").val();
+        if(options == 'exchange'||options == 'task_list')
+         {
+             $("#locationId").hide();
+         }
+         if(options == 'wblink'){
+             $("#locationId").show();
+         }
+    };
+
+</script>
+{include file="footer.html"}
